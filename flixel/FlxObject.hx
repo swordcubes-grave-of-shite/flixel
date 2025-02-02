@@ -839,7 +839,7 @@ class FlxObject extends FlxBasic
 		if (path != null && path.active)
 			path.update(elapsed);
 
-		if (moves)
+		if (moves && (velocity.x != 0 || velocity.y != 0))
 			updateMotion(elapsed);
 
 		wasTouching = touching;
