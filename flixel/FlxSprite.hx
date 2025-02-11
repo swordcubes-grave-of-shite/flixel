@@ -457,6 +457,7 @@ class FlxSprite extends FlxObject
 		_frame = FlxDestroyUtil.destroy(_frame);
 		_frameGraphic = FlxDestroyUtil.destroy(_frameGraphic);
 
+		clipRect = FlxDestroyUtil.put(clipRect);
 		shader = null;
 	}
 
@@ -1604,7 +1605,7 @@ class FlxSprite extends FlxObject
 	function set_clipRect(rect:FlxRect):FlxRect
 	{
 		if (rect != null)
-			clipRect = rect.round();
+			clipRect = rect;
 		else
 			clipRect = null;
 
