@@ -52,6 +52,9 @@ private enum UserDefines
 	 * any `</asset>` tags in your project.xml, to reduce your total memory
 	 */
 	FLX_CUSTOM_ASSETS_DIRECTORY;
+
+	FLX_CUSTOM_RUNTIME_ASSETS_DIRECTORY;
+
 	/**
 	 * Allows you to use sound paths with no extension, and the default sound type for that
 	 * target will be used. If enabled it will use ogg on all targets except flash, which uses mp3.
@@ -280,17 +283,26 @@ class FlxDefines
 			}
 			else
 			{
-				// Todo: check sys targets
-				final rawDirectory = Path.normalize(definedValue(FLX_CUSTOM_ASSETS_DIRECTORY));
-				final directory = Path.normalize(rawDirectory);
-				final absPath = sys.FileSystem.absolutePath(directory);
-				if (!sys.FileSystem.isDirectory(directory) || directory == "1")
+				if(!defined(FLX_CUSTOM_RUNTIME_ASSETS_DIRECTORY))
 				{
-					abort('FLX_CUSTOM_ASSETS_DIRECTORY must be a path to a directory, got "$rawDirectory"'
-						+ '\nabsolute path: $absPath', (macro null).pos);
+					// Todo: check sys targets
+					final rawDirectory = Path.normalize(definedValue(FLX_CUSTOM_ASSETS_DIRECTORY));
+					final directory = Path.normalize(rawDirectory);
+					final absPath = sys.FileSystem.absolutePath(directory);
+					if (!sys.FileSystem.isDirectory(directory) || directory == "1")
+						{
+							abort('FLX_CUSTOM_ASSETS_DIRECTORY must be a path to a directory, got "$rawDirectory"'
+							+ '\nabsolute path: $absPath', (macro null).pos);
+					}
+					define(FLX_CUSTOM_ASSETS_DIRECTORY_ABS, absPath);
 				}
-				define(FLX_CUSTOM_ASSETS_DIRECTORY_ABS, absPath);
-			}
+				else
+				{
+					final rawDirectory = Path.normalize(definedValue(FLX_CUSTOM_ASSETS_DIRECTORY));
+					final directory = Path.normalize(rawDirectory);
+					define(FLX_CUSTOM_ASSETS_DIRECTORY_ABS, directory);
+				}
+		}
 		}
 		else // define boolean inversion
 			define(FLX_STANDARD_ASSETS_DIRECTORY);
