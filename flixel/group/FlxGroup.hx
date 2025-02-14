@@ -989,6 +989,8 @@ class FlxTypedGroupIterator<T>
 	var _cursor:Int;
 	var _length:Int;
 
+	// NOTE: these methods are inlined to ensure there are no allocation when iterating through a group
+	
 	public inline function new(groupMembers:Array<T>, ?filter:T->Bool)
 	{
 		_groupMembers = groupMembers;
