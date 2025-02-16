@@ -678,6 +678,43 @@ class FlxSprite extends FlxObject
 	}
 
 	/**
+	 * This function creates a solid colored rectangular image dynamically.
+	 *
+	 * HaxeFlixel's graphic caching system keeps track of loaded image data.
+	 * When you make an identical copy of a previously used image, by default
+	 * HaxeFlixel copies the previous reference onto the pixels field instead
+	 * of creating another copy of the image data, to save memory.
+	 *
+	 * NOTE: This method updates hitbox size and frame size.
+	 *
+	 * @param   Width    The width of the sprite you want to generate.
+	 * @param   Height   The height of the sprite you want to generate.
+	 * @param   Color    Specifies the color of the generated block (ARGB format).
+	 * @param   Unique   Whether the graphic should be a unique instance in the graphics cache. Default is `false`.
+	 *                   Set this to `true` if you want to modify the `pixels` field without changing the
+	 *                   `pixels` of other sprites with the same `BitmapData`.
+	 * @param   Key      An optional `String` key to identify this graphic in the cache.
+	 *                   If `null`, the key is determined by `Width`, `Height` and `Color`.
+	 *                   If `Unique` is `true` and a graphic with this `Key` already exists,
+	 *                   it is used as a prefix to find a new unique name like `"Key3"`.
+	 * @return  This `FlxSprite` instance (nice for chaining stuff together, if you're into that).
+	 */
+	public function makeSolid(width:Int, height:Int, color = FlxColor.WHITE, unique = false, ?key:String):FlxSprite
+	{
+		var graph:FlxGraphic = FlxG.bitmap.create(1, 1, color, unique, key);
+		frames = graph.imageFrame;
+		
+		#if FLX_TRACK_GRAPHICS
+		graph.trackingInfo = 'makeGraphic($ID, ${color.toHexString()})';
+		#end
+		
+		scale.set(width, height);
+		updateHitbox();
+		
+		return this;
+	}
+
+	/**
 	 * Called whenever a new graphic is loaded for this sprite (after `loadGraphic()`, `makeGraphic()` etc).
 	 */
 	public function graphicLoaded():Void {}
