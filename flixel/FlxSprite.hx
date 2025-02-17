@@ -699,7 +699,7 @@ class FlxSprite extends FlxObject
 	 *                   it is used as a prefix to find a new unique name like `"Key3"`.
 	 * @return  This `FlxSprite` instance (nice for chaining stuff together, if you're into that).
 	 */
-	public function makeSolid(width:Int, height:Int, color = FlxColor.WHITE, unique = false, ?key:String):FlxSprite
+	public function makeSolid(width:Float, height:Float, color = FlxColor.WHITE, unique = false, ?key:String):FlxSprite
 	{
 		var graph:FlxGraphic = FlxG.bitmap.create(1, 1, color, unique, key);
 		frames = graph.imageFrame;
