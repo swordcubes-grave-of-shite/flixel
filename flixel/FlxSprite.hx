@@ -1,5 +1,6 @@
 package flixel;
 
+import flixel.util.FlxPool.IFlxPooled;
 import flixel.FlxBasic.IFlxBasic;
 import flixel.animation.FlxAnimationController;
 import flixel.graphics.FlxGraphic;
@@ -457,7 +458,10 @@ class FlxSprite extends FlxObject
 		_frame = FlxDestroyUtil.destroy(_frame);
 		_frameGraphic = FlxDestroyUtil.destroy(_frameGraphic);
 
-		clipRect = FlxDestroyUtil.put(clipRect);
+		var _clipRect:FlxRect = FlxDestroyUtil.put(clipRect);
+		if(_clipRect!= null){
+			clipRect = _clipRect;
+		}
 		shader = null;
 	}
 
@@ -1641,10 +1645,7 @@ class FlxSprite extends FlxObject
 	@:noCompletion
 	function set_clipRect(rect:FlxRect):FlxRect
 	{
-		if (rect != null)
-			clipRect = rect;
-		else
-			clipRect = null;
+		clipRect = rect;
 
 		if (frames != null)
 			frame = frames.frames[animation.frameIndex];
