@@ -92,6 +92,22 @@ class FlxMath
 	}
 
 	/**
+	 * Bound a integer by a minimum and maximum. Ensures that this integer is
+	 * no smaller than the minimum, and no larger than the maximum.
+	 * Leaving a bound `null` means that side is unbounded.
+	 *
+	 * @param	Value	Any integer.
+	 * @param	Min		Any integer.
+	 * @param	Max		Any integer.
+	 * @return	The bounded value of the integer.
+	 */
+	public static inline function boundInt(Value:Int, ?Min:Int, ?Max:Int):Int
+	{
+		var lowerBound:Int = (Min != null && Value < Min) ? Min : Value;
+		return (Max != null && lowerBound > Max) ? Max : lowerBound;
+	}
+
+	/**
 	 * Returns the linear interpolation of two numbers if `ratio`
 	 * is between 0 and 1, and the linear extrapolation otherwise.
 	 *
