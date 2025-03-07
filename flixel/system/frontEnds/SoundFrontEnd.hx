@@ -66,6 +66,12 @@ class SoundFrontEnd
 	 * volumeUp-, volumeDown- or muteKeys is pressed.
 	 */
 	public var soundTrayEnabled:Bool = true;
+
+	/**
+	 * Whether or not the volume should be able to be
+	 * changed by the player.
+	 */
+	public var acceptInputs:Bool = true;
 	
 	#if FLX_SOUND_TRAY
 	/**
@@ -400,7 +406,7 @@ class SoundFrontEnd
 			list.update(elapsed);
 
 		#if FLX_KEYBOARD
-		if (!FlxInputText.globalManager.isTyping)
+		if (!FlxInputText.globalManager.isTyping && acceptInputs)
 		{
 			if (FlxG.keys.anyJustReleased(muteKeys))
 				toggleMuted();
