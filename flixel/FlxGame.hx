@@ -370,7 +370,9 @@ class FlxGame extends Sprite
 
 		_lostFocus = false;
 		FlxG.signals.focusGained.dispatch();
-		_state.onFocus();
+
+		if(_state != null)
+			_state.onFocus();
 
 		if (!FlxG.autoPause)
 			return;
@@ -400,7 +402,9 @@ class FlxGame extends Sprite
 
 		_lostFocus = true;
 		FlxG.signals.focusLost.dispatch();
-		_state.onFocusLost();
+
+		if(_state != null)
+			_state.onFocusLost();
 
 		if (!FlxG.autoPause)
 			return;
@@ -434,7 +438,8 @@ class FlxGame extends Sprite
 	{
 		FlxG.resizeGame(width, height);
 
-		_state.onResize(width, height);
+		if (_state != null)
+			_state.onResize(width, height);
 
 		FlxG.cameras.resize();
 		FlxG.signals.gameResized.dispatch(width, height);
@@ -586,7 +591,8 @@ class FlxGame extends Sprite
 
 		FlxG.signals.preStateCreate.dispatch(_state);
 
-		_state.create();
+		if (_state != null)
+			_state.create();
 
 		if (_gameJustStarted)
 			gameStart();
@@ -669,9 +675,6 @@ class FlxGame extends Sprite
 	 */
 	function update():Void
 	{
-		if (!_state.active || !_state.exists)
-			return;
-
 		if (_nextState != null)
 			switchState();
 
@@ -691,7 +694,8 @@ class FlxGame extends Sprite
 		#end
 		FlxG.plugins.update(FlxG.elapsed);
 
-		_state.tryUpdate(FlxG.elapsed);
+		if (_state != null && (_state.active && _state.exists))
+			_state.tryUpdate(FlxG.elapsed);
 
 		FlxG.cameras.update(FlxG.elapsed);
 		FlxG.signals.postUpdate.dispatch();
@@ -794,9 +798,6 @@ class FlxGame extends Sprite
 	 */
 	function draw():Void
 	{
-		if (!_state.visible || !_state.exists)
-			return;
-
 		#if FLX_DEBUG
 		if (FlxG.debugger.visible)
 			ticks = getTicks();
@@ -811,13 +812,17 @@ class FlxGame extends Sprite
 
 		if (FlxG.plugins.drawOnTop)
 		{
-			_state.draw();
+			if (_state != null && (_state.active && _state.exists))
+				_state.draw();
+
 			FlxG.plugins.draw();
 		}
 		else
 		{
 			FlxG.plugins.draw();
-			_state.draw();
+
+			if (_state != null && (_state.active && _state.exists))
+				_state.draw();
 		}
 
 		if (FlxG.renderTile)
