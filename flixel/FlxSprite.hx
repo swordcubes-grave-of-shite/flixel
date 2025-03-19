@@ -862,6 +862,8 @@ class FlxSprite extends FlxObject
 	 */
 	override public function draw():Void
 	{
+		checkClipRect();
+
 		checkEmptyFrame();
 
 		if (alpha == 0 || _frame.type == FlxFrameType.EMPTY)
@@ -869,8 +871,6 @@ class FlxSprite extends FlxObject
 
 		if (dirty) // rarely
 			calcFrame(useFramePixels);
-		
-		checkClipRect();
 		
 		for (camera in getCamerasLegacy())
 		{
@@ -898,7 +898,8 @@ class FlxSprite extends FlxObject
 	 */
 	function checkClipRect()
 	{
-		if ((clipRect == null && Math.isNaN(_lastClipRect.x))
+		if (frames == null
+		|| (clipRect == null && Math.isNaN(_lastClipRect.x))
 		|| (clipRect != null && clipRect.equals(_lastClipRect)))
 			return;
 		
