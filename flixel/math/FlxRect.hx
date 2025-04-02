@@ -286,6 +286,23 @@ class FlxRect implements IFlxPooled
 	}
 
 	/**
+	 * Checks to see if this rectangle fully contains another
+	 *
+	 * @param   rect  The other rectangle
+	 * @return  Whether this rectangle contains the given rectangle
+	 * @since 6.1.0
+	 */
+	public inline function contains(rect:FlxRect):Bool
+	{
+		final result = rect.left >= left
+			&& rect.right <= right
+			&& rect.top >= top
+			&& rect.bottom <= bottom;
+		rect.putWeak();
+		return result;
+	}
+
+	/**
 	 * Returns true if this FlxRect contains the FlxPoint
 	 *
 	 * @param   point  The FlxPoint to check
@@ -416,28 +433,22 @@ class FlxRect implements IFlxPooled
 	 *                if `null` , the top-left (or 0,0) is used.
 	 * @param newRect Optional output `FlxRect`, if `null`, a new one is created. Note: If you like, you can
 	 *                pass in the input rect to manipulate it. ex: `rect.calcRotatedBounds(angle, null, rect)`
-	 * @param innerOffset Inner offset.
 	 * @return A globally aligned `FlxRect` that fully contains the input rectangle.
 	 * @since 4.11.0
 	 */
-	public function getRotatedBounds(degrees:Float, ?origin:FlxPoint, ?newRect:FlxRect, ?innerOffset:FlxPoint):FlxRect
+	public function getRotatedBounds(degrees:Float, ?origin:FlxPoint, ?newRect:FlxRect):FlxRect
 	{
 		if (origin == null)
 			origin = FlxPoint.weak(0, 0);
-
+		
 		if (newRect == null)
 			newRect = FlxRect.get();
-
-		if (innerOffset == null)
-			innerOffset = FlxPoint.weak(0, 0);
-
+		
 		degrees = degrees % 360;
 		if (degrees == 0)
 		{
-			newRect.set(x - innerOffset.x, y - innerOffset.y, width, height);
 			origin.putWeak();
-			innerOffset.putWeak();
-			return newRect;
+			return newRect.set(x, y, width, height);
 		}
 		
 		if (degrees < 0)
@@ -447,11 +458,10 @@ class FlxRect implements IFlxPooled
 		var cos = Math.cos(radians);
 		var sin = Math.sin(radians);
 		
-		var left = -origin.x - innerOffset.x;
-		var top = -origin.y - innerOffset.y;
-		var right = -origin.x + width - innerOffset.x;
-		var bottom = -origin.y + height - innerOffset.y;
-
+		var left = -origin.x;
+		var top = -origin.y;
+		var right = -origin.x + width;
+		var bottom = -origin.y + height;
 		if (degrees < 90)
 		{
 			newRect.x = x + origin.x + cos * left - sin * bottom;
@@ -473,12 +483,11 @@ class FlxRect implements IFlxPooled
 			newRect.y = y + origin.y + sin * right + cos * top;
 		}
 		// temp var, in case input rect is the output rect
-		var newHeight = Math.abs(cos * height) + Math.abs(sin * width);
-		newRect.width = Math.abs(cos * width) + Math.abs(sin * height);
+		var newHeight = Math.abs(cos * height) + Math.abs(sin * width );
+		newRect.width = Math.abs(cos * width ) + Math.abs(sin * height);
 		newRect.height = newHeight;
 		
 		origin.putWeak();
-		innerOffset.putWeak();
 		return newRect;
 	}
 
