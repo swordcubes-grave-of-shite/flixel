@@ -57,6 +57,7 @@ private enum UserDefines
 	FLX_CUSTOM_ASSETS_DIRECTORY;
 
 	FLX_CUSTOM_RUNTIME_ASSETS_DIRECTORY;
+	FLX_NO_VALIDATE_CUSTOM_ASSETS_DIRECTORY;
 
 	/**
 	 * Allows you to use sound paths with no extension, and the default sound type for that
@@ -117,6 +118,8 @@ private enum HelperDefines
 	FLX_STANDARD_ASSETS_DIRECTORY;
 	/** The normalized, absolute path of `FLX_CUSTOM_ASSETS_DIRECTORY`, used internally */
 	FLX_CUSTOM_ASSETS_DIRECTORY_ABS;
+	/** Whether or not to validate the contents of `FLX_CUSTOM_ASSETS_DIRECTORY` on runtime */
+	FLX_VALIDATE_CUSTOM_ASSETS_DIRECTORY;
 	FLX_NO_DEFAULT_SOUND_EXT;
 }
 
@@ -251,6 +254,9 @@ class FlxDefines
 		
 		if (!defined(FLX_NO_SAVE))
 			define(FLX_SAVE);
+
+		if (!defined(FLX_NO_VALIDATE_CUSTOM_ASSETS_DIRECTORY))
+			define(FLX_VALIDATE_CUSTOM_ASSETS_DIRECTORY);
 		
 		if (!defined("flash") || defined("flash11_8"))
 			define(FLX_GAMEINPUT_API);
