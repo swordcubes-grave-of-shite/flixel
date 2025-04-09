@@ -445,6 +445,14 @@ class FlxGraphic implements IFlxDestroyable
 	 */
 	public function destroy():Void
 	{
+		@:privateAccess
+		if (bitmap != null)
+		{
+			if (bitmap.__texture != null)
+				bitmap.__texture.dispose();
+
+			bitmap.disposeImage();
+		}
 		bitmap = FlxDestroyUtil.dispose(bitmap);
 
 		shader = null;
