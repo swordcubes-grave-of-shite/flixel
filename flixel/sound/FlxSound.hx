@@ -289,6 +289,9 @@ class FlxSound extends FlxBasic
 			_sound.removeEventListener(Event.ID3, gotID3);
 			_sound = null;
 		}
+
+		if (fadeTween != null)
+			fadeTween.cancel();
 		
 		onComplete = null;
 		

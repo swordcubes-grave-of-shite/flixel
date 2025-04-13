@@ -503,6 +503,7 @@ class FlxTween implements IFlxDestroyable
 	public var manager:FlxTweenManager;
 
 	public var active(default, set):Bool = false;
+	public var paused(default, set):Bool = false;
 	public var duration:Float = 0;
 	public var ease:EaseFunction;
 	public var onStart:TweenCallback;
@@ -663,9 +664,11 @@ class FlxTween implements IFlxDestroyable
 		if (duration == 0)
 		{
 			active = false;
+			paused = false;
 			return this;
 		}
 		active = true;
+		paused = false;
 		_running = false;
 		finished = false;
 		return this;
@@ -763,6 +766,8 @@ class FlxTween implements IFlxDestroyable
 	function setVarsOnEnd():Void
 	{
 		active = false;
+		paused = false;
+
 		_running = false;
 		finished = true;
 	}
@@ -781,7 +786,7 @@ class FlxTween implements IFlxDestroyable
 
 	function doNextTween(tween:FlxTween):Void
 	{
-		if (!tween.active)
+		if (!tween.active && !tween.paused)
 		{
 			tween.start();
 			manager.add(tween);
@@ -902,6 +907,12 @@ class FlxTween implements IFlxDestroyable
 			restart();
 
 		return active;
+	}
+
+	function set_paused(paused:Bool):Bool
+	{
+		this.paused = paused;
+		return paused;
 	}
 }
 
@@ -1305,7 +1316,7 @@ class FlxTweenManager extends FlxBasic
 
 		for (tween in _tweens)
 		{
-			if (!tween.active)
+			if (!tween.active || tween.paused)
 				continue;
 
 			tween.update(elapsed);
@@ -1431,7 +1442,7 @@ class FlxTweenManager extends FlxBasic
 		forEachTweensOf(Object, FieldPaths,
 			function (tween)
 			{
-				if ((tween.type & FlxTweenType.LOOPING) == 0 && (tween.type & FlxTweenType.PINGPONG) == 0 && tween.active)
+				if ((tween.type & FlxTweenType.LOOPING) == 0 && (tween.type & FlxTweenType.PINGPONG) == 0 && tween.active && !tween.paused)
 					tween.update(FlxMath.MAX_VALUE_FLOAT);
 			}
 		);
@@ -1528,7 +1539,7 @@ class FlxTweenManager extends FlxBasic
 	public function completeAll():Void
 	{
 		for (tween in _tweens)
-			if ((tween.type & FlxTweenType.LOOPING) == 0 && (tween.type & FlxTweenType.PINGPONG) == 0 && tween.active)
+			if ((tween.type & FlxTweenType.LOOPING) == 0 && (tween.type & FlxTweenType.PINGPONG) == 0 && tween.active && !tween.paused)
 				tween.update(FlxMath.MAX_VALUE_FLOAT);
 	}
 

@@ -122,6 +122,11 @@ class FlxCamera extends FlxBasic
 	public var followLerp:Float = 1.0;
 
 	/**
+	 * Whether or not the camera is allowed to follow it's `target`.
+	 */
+	public var followEnabled:Bool = true;
+
+	/**
 	 * You can assign a "dead zone" to the camera in order to better control its movement.
 	 * The camera will always keep the focus object inside the dead zone, unless it is bumping up against
 	 * the camera bounds. The `deadzone`'s coordinates are measured from the camera's upper left corner in game pixels.
@@ -1129,7 +1134,7 @@ class FlxCamera extends FlxBasic
 	override public function update(elapsed:Float):Void
 	{
 		// follow the target, if there is one
-		if (target != null)
+		if (followEnabled && target != null)
 		{
 			updateFollow();
 			updateLerp(elapsed);
@@ -1268,7 +1273,7 @@ class FlxCamera extends FlxBasic
 		else if (followLerp > 0.0)
 		{
 			// Adjust lerp based on the current frame rate so lerp is less framerate dependant
-			final adjustedLerp = 1.0 - Math.pow(1.0 - followLerp, elapsed * 60);
+			final adjustedLerp = Math.min(1.0 - Math.pow(1.0 - followLerp, elapsed * 60), 1.0);
 			
 			scroll.x += (_scrollTarget.x - scroll.x) * adjustedLerp;
 			scroll.y += (_scrollTarget.y - scroll.y) * adjustedLerp;
