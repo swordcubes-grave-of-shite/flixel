@@ -193,7 +193,6 @@ class FlxSoundTray extends Sprite
 		final volume = FlxG.sound.muted ? 0 : FlxG.sound.volume;
 		showAnim(volume, silent ? null : volumeDownSound);
 	}
-	
 
 	public function screenCenter():Void
 	{

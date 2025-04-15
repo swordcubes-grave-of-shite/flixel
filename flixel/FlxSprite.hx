@@ -281,6 +281,16 @@ class FlxSprite extends FlxObject
 	 */
 	public var useColorTransform(default, null):Bool = false;
 
+	public var onDraw(default, set):FlxSprite->Void;
+
+	public function set_onDraw(drawFunc:FlxSprite->Void):FlxSprite->Void
+	{
+		__drawOverrided = drawFunc != null;
+		return onDraw = drawFunc;
+	}
+
+	@:noCompletion public var __drawOverrided:Bool = false; // Avoid null checks
+
 	/**
 	 * Clipping rectangle for this sprite.
 	 * Set to `null` to discard graphic frame clipping.
@@ -860,6 +870,13 @@ class FlxSprite extends FlxObject
 	 */
 	override public function draw():Void
 	{
+		if (__drawOverrided)
+		{
+			__drawOverrided = false;
+			onDraw(this);
+			__drawOverrided = true;
+			return;
+		}
 		checkClipRect();
 
 		checkEmptyFrame();

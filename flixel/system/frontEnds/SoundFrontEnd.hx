@@ -362,7 +362,7 @@ class SoundFrontEnd
 	/**
 	 * Changes the volume by a certain amount, also activating the sound tray.
 	 */
-	public function changeVolume(Amount:Float):Void
+	public dynamic function changeVolume(Amount:Float):Void
 	{
 		muted = false;
 		volume += Amount;
