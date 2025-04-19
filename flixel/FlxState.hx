@@ -103,6 +103,8 @@ class FlxState extends FlxContainer
 	 */
 	public function create():Void {}
 
+	public function createPost():Void {}
+
 	override function draw():Void
 	{
 		if (persistentDraw || subState == null)
@@ -162,8 +164,14 @@ class FlxState extends FlxContainer
 			}
 			if (subState.openCallback != null)
 				subState.openCallback();
+
 			if (_subStateOpened != null)
 				_subStateOpened.dispatch(subState);
+
+			if (subState._created)
+			{
+				subState.createPost();
+			}
 		}
 	}
 
