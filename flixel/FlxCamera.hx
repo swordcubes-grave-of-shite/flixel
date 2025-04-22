@@ -779,7 +779,7 @@ class FlxCamera extends FlxBasic
 		}
 		else
 		{
-			var isColored = (transform != null && transform.hasRGBMultipliers());
+			var isColored = (transform != null #if !html5 && transform.hasRGBMultipliers() #end);
 			var hasColorOffsets:Bool = (transform != null && transform.hasRGBAOffsets());
 
 			#if FLX_RENDER_TRIANGLE

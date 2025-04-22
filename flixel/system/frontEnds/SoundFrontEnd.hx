@@ -362,7 +362,7 @@ class SoundFrontEnd
 	/**
 	 * Changes the volume by a certain amount, also activating the sound tray.
 	 */
-	public dynamic function changeVolume(Amount:Float):Void
+	public function changeVolume(Amount:Float):Void
 	{
 		muted = false;
 		volume += Amount;
@@ -384,6 +384,34 @@ class SoundFrontEnd
 				FlxG.game.soundTray.showDecrement();
 		}
 		#end
+	}
+	
+	/**
+	 * Takes the volume scale used by Flixel fields and gives the final transformed volume that is
+	 * actually used to play the sound. To reverse this operation, use `reverseSoundCurve`. This
+	 * field is `dynamic` and can be overwritten. 
+	 */
+	public dynamic function applySoundCurve(volume:Float):Float
+	{
+		// Example of linear to logarithmic sound curve:
+		// final clampedVolume = Math.max(0, Math.min(1, volume));
+		// return Math.exp(Math.log(0.001) * (1 - clampedVolume));
+		
+		return volume;
+	}
+	
+	/**
+	 * Takes a transformed volume and returns the corresponding volume scale used by Flixel fields.
+	 * Used to reverse the operation of `applySoundCurve`. This field is `dynamic` and can be
+	 * set to a custom function.
+	 */
+	public dynamic function reverseSoundCurve(curvedVolume:Float):Float
+	{
+		// Example of logarithmic to linear sound curve:
+		// final clampedVolume = Math.max(minValue, Math.min(1, x));
+		// return 1 - (Math.log(clampedVolume) / Math.log(0.001));
+		
+		return curvedVolume;
 	}
 
 	function new()
