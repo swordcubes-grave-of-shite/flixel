@@ -745,6 +745,15 @@ class FlxObject extends FlxBasic
 	#end
 
 	/**
+	 * Whether or not to force `isOnScreen()` to return true.
+	 * 
+	 * This is a dirty hack for certain cases where `isOnScreen()`
+	 * doesn't work correctly but flixel sucks to modify and i'm too
+	 * lazy to give a shit to properly fix it
+	 */
+	public var forceIsOnScreen:Bool = false;
+
+	/**
 	 * The path this object follows. Not initialized by default.
 	 * Assign a `new FlxPath()` object and `start()` it if you want to this object to follow a path.
 	 * Set `path` to `null` again to stop following the path.
@@ -1114,6 +1123,9 @@ class FlxObject extends FlxBasic
 	 */
 	public function isOnScreen(?camera:FlxCamera):Bool
 	{
+		if (forceIsOnScreen)
+			return true;
+		
 		if (camera == null)
 			camera = getDefaultCamera();
 

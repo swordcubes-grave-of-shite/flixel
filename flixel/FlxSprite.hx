@@ -1386,6 +1386,9 @@ class FlxSprite extends FlxObject
 	 */
 	override public function isOnScreen(?camera:FlxCamera):Bool
 	{
+		if (forceIsOnScreen)
+			return true;
+		
 		if (camera == null)
 			camera = getDefaultCamera();
 		
@@ -1462,13 +1465,13 @@ class FlxSprite extends FlxObject
 		_scaledOrigin.set(origin.x * Math.abs(scale.x), origin.y * Math.abs(scale.y));
 		_scaledFrameOffset.set((frameOffset.x + _animOffset.x) * Math.abs(scale.x), (frameOffset.y + _animOffset.y) * Math.abs(scale.y));
 
-		newRect.x += -(camera.scroll.x * scrollFactor.x) - offset.x + origin.x - _scaledOrigin.x;
-		newRect.y += -(camera.scroll.y * scrollFactor.y) - offset.y + origin.y - _scaledOrigin.y;
+		newRect.x += -Std.int(camera.scroll.x * scrollFactor.x) - offset.x + origin.x - _scaledOrigin.x;
+		newRect.y += -Std.int(camera.scroll.y * scrollFactor.y) - offset.y + origin.y - _scaledOrigin.y;
 
 		if (isPixelPerfectRender(camera))
 			newRect.floor();
 
-		newRect.setSize((frameWidth * Math.abs(scale.x)) - (frameOffset.x + _animOffset.x), (frameHeight * Math.abs(scale.y)) - (frameOffset.y + _animOffset.y));
+		newRect.setSize(frameWidth * Math.abs(scale.x), frameHeight * Math.abs(scale.y));
 		return newRect.getRotatedBounds(angle, _scaledOrigin, newRect, _scaledFrameOffset);
 	}
 		

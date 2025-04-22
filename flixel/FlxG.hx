@@ -147,6 +147,16 @@ class FlxG
 	public static var renderTile(default, null):Bool;
 
 	/**
+	 * Whether or not antialiasing is allowed.
+	 * 
+	 * If this is disabled, sprites or cameras will not have
+	 * any antialiasing, regardless of their individual antialiasing values.
+	 * 
+	 * This could come in handy for an antialiasing option in your game!
+	 */
+	public static var allowAntialiasing:Bool = true;
+
+	/**
 	 * Represents the amount of time in seconds that passed since last frame.
 	 */
 	@:allow(flixel.FlxGame.updateElapsed)

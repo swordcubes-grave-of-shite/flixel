@@ -759,6 +759,9 @@ class FlxCamera extends FlxBasic
 	public function drawPixels(?frame:FlxFrame, ?pixels:BitmapData, matrix:FlxMatrix, ?transform:ColorTransform, ?blend:BlendMode, ?smoothing:Bool = false,
 			?shader:FlxShader):Void
 	{
+		if (smoothing && !FlxG.allowAntialiasing)
+			smoothing = false;
+
 		if (FlxG.renderBlit)
 		{
 			_helperMatrix.copyFrom(matrix);
@@ -766,12 +769,12 @@ class FlxCamera extends FlxBasic
 			if (_useBlitMatrix)
 			{
 				_helperMatrix.concat(_blitMatrix);
-				buffer.draw(pixels, _helperMatrix, null, null, null, (smoothing || antialiasing));
+				buffer.draw(pixels, _helperMatrix, null, null, null, (smoothing || (antialiasing && FlxG.allowAntialiasing)));
 			}
 			else
 			{
 				_helperMatrix.translate(-viewMarginLeft, -viewMarginTop);
-				buffer.draw(pixels, _helperMatrix, null, blend, null, (smoothing || antialiasing));
+				buffer.draw(pixels, _helperMatrix, null, blend, null, (smoothing || (antialiasing && FlxG.allowAntialiasing)));
 			}
 		}
 		else
@@ -791,6 +794,9 @@ class FlxCamera extends FlxBasic
 	public function copyPixels(?frame:FlxFrame, ?pixels:BitmapData, ?sourceRect:Rectangle, destPoint:Point, ?transform:ColorTransform, ?blend:BlendMode,
 			?smoothing:Bool = false, ?shader:FlxShader):Void
 	{
+		if (smoothing && !FlxG.allowAntialiasing)
+			smoothing = false;
+
 		if (FlxG.renderBlit)
 		{
 			if (pixels != null)
@@ -800,7 +806,7 @@ class FlxCamera extends FlxBasic
 					_helperMatrix.identity();
 					_helperMatrix.translate(destPoint.x, destPoint.y);
 					_helperMatrix.concat(_blitMatrix);
-					buffer.draw(pixels, _helperMatrix, null, null, null, (smoothing || antialiasing));
+					buffer.draw(pixels, _helperMatrix, null, null, null, (smoothing || (antialiasing && FlxG.allowAntialiasing)));
 				}
 				else
 				{
@@ -835,6 +841,9 @@ class FlxCamera extends FlxBasic
 	public function drawTriangles(graphic:FlxGraphic, vertices:DrawData<Float>, indices:DrawData<Int>, uvtData:DrawData<Float>, ?colors:DrawData<Int>,
 			?position:FlxPoint, ?blend:BlendMode, repeat:Bool = false, smoothing:Bool = false, ?transform:ColorTransform, ?shader:FlxShader):Void
 	{
+		if (smoothing && !FlxG.allowAntialiasing)
+			smoothing = false;
+		
 		if (FlxG.renderBlit)
 		{
 			if (position == null)
@@ -2013,7 +2022,7 @@ class FlxCamera extends FlxBasic
 		antialiasing = Antialiasing;
 		if (FlxG.renderBlit)
 		{
-			_flashBitmap.smoothing = Antialiasing;
+			_flashBitmap.smoothing = Antialiasing && FlxG.allowAntialiasing;
 		}
 		return Antialiasing;
 	}
