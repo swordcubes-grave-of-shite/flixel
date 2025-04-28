@@ -525,7 +525,7 @@ class FlxMouse extends FlxPointer implements IFlxInputManager
 		setRawPositionUnsafe(FlxG.game.mouseX, FlxG.game.mouseY);
 
 		// actually position the flixel mouse cursor graphic
-		if (visible)
+		if (cursorContainer.visible)
 		{
 			cursorContainer.x = FlxG.game.mouseX;
 			cursorContainer.y = FlxG.game.mouseY;

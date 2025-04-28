@@ -83,6 +83,10 @@ class FlxBar extends FlxSprite
 	/**
 	 * Number of frames FlxBar will have. Default value is 100.
 	 * The bigger value you set then visual will change smoother.
+	 * 
+	 * If the value is set to 0, the bar will smoothly change
+	 * to any value given, instead of looking blocky.
+	 * 
 	 * @since 4.1.0
 	 */
 	public var numDivisions(default, set):Int = 100;
@@ -762,16 +766,16 @@ class FlxBar extends FlxSprite
 		var fraction:Float = (value - min) / range;
 		var percent:Float = fraction * _maxPercent;
 		var maxScale:Float = (_fillHorizontal) ? barWidth : barHeight;
-		var scaleInterval:Float = maxScale / numDivisions;
-		var interval:Float = Math.round(Std.int(fraction * maxScale / scaleInterval) * scaleInterval);
+		var scaleInterval:Float = (numDivisions > 0) ? maxScale / numDivisions : 0;
+		var interval:Float = (numDivisions > 0) ? Math.round(Std.int(fraction * maxScale / scaleInterval) * scaleInterval) : fraction * maxScale;
 
 		if (_fillHorizontal)
 		{
-			_filledBarRect.width = Std.int(interval);
+			_filledBarRect.width = (numDivisions > 0) ? Std.int(interval) : interval;
 		}
 		else
 		{
-			_filledBarRect.height = Std.int(interval);
+			_filledBarRect.height = (numDivisions > 0) ? Std.int(interval) : interval;
 		}
 
 		if (percent > 0)
@@ -975,7 +979,7 @@ class FlxBar extends FlxSprite
 
 	function set_numDivisions(newValue:Int):Int
 	{
-		numDivisions = (newValue > 0) ? newValue : 100;
+		numDivisions = (newValue >= 0) ? newValue : 100;
 		updateFilledBar();
 		return newValue;
 	}
