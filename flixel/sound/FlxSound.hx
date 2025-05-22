@@ -621,7 +621,7 @@ class FlxSound extends FlxBasic
 	
 	function calcTransformVolume():Float
 	{
-		final volume = (group != null ? group.volume : 1.0) * _volume * _volumeAdjust * (_muted ? 0 : 1);
+		final volume = (group != null ? group.getVolume() : 1.0) * _volume * _volumeAdjust * (_muted ? 0 : 1);
 		
 		#if FLX_SOUND_SYSTEM
 		if (FlxG.sound.muted)

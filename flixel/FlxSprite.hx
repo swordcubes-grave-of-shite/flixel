@@ -208,7 +208,10 @@ class FlxSprite extends FlxObject
 	public var bakedRotationAngle(default, null):Float = 0;
 
 	/**
-	 * Set alpha to a number between `0` and `1` to change the opacity of the sprite.
+	 * Set alpha to a number between `0` and `1` to change the opacity of the sprite. Calling
+	 * `setColorTransform` will also change this value
+	 * 
+	 * **NOTE:** This value is automatically clamped to 0 <= a <= 1
 	 @see https://snippets.haxeflixel.com/sprites/alpha/
 	 */
 	public var alpha(default, set):Float = 1.0;
@@ -257,7 +260,7 @@ class FlxSprite extends FlxObject
 	/**
 	 * Change the size of your sprite's graphic.
 	 * NOTE: The hitbox is not automatically adjusted, use `updateHitbox()` for that.
-	 * WARNING: With `FlxG.renderBlit`, scaling sprites decreases rendering performance by a factor of about x10!
+	 * **WARNING:** With `FlxG.renderBlit`, scaling sprites decreases rendering performance by a factor of about x10!
 	 * @see https://snippets.haxeflixel.com/sprites/scale/
 	 */
 	public var scale(default, null):FlxPoint;
@@ -266,19 +269,23 @@ class FlxSprite extends FlxObject
 	 * Blending modes, just like Photoshop or whatever, e.g. "multiply", "screen", etc.
 	 */
 	public var blend(default, set):BlendMode;
-
+	
 	/**
-	 * Tints the whole sprite to a color (`0xRRGGBB` format) - similar to OpenGL vertex colors. You can use
-	 * `0xAARRGGBB` colors, but the alpha value will simply be ignored. To change the opacity use `alpha`.
+	 * Multiplies this sprite's image by the given red, green and blue components, alpha is ignored.
+	 * To change the opacity use `alpha`. Calling `setColorTransform` will also change this value.
 	 * @see https://snippets.haxeflixel.com/sprites/color/
 	 */
-	public var color(default, set):FlxColor = 0xffffff;
-
-	public var colorTransform(default, null):ColorTransform;
+	public var color(default, set):FlxColor = FlxColor.WHITE;
+	
+	/**
+	 * The color effects of this sprite, changes to `color` or `alplha` will be reflected here
+	 */
+	public var colorTransform(default, null) = new ColorTransform();
 
 	/**
 	 * Whether or not to use a `ColorTransform` set via `setColorTransform()`.
 	 */
+	@:deprecated("useColorTransform is deprecated, use hasColorTransform(), instead")// 6.1.0
 	public var useColorTransform(default, null):Bool = false;
 
 	public var onDraw(default, set):FlxSprite->Void;
@@ -1111,31 +1118,46 @@ class FlxSprite extends FlxObject
 	 * @param   blueOffset        The offset for the blue color channel value, in the range from `-255` to `255`.
 	 * @param   alphaOffset       The offset for alpha transparency channel value, in the range from `-255` to `255`.
 	 */
+	@:haxe.warning("-WDeprecated")
 	public function setColorTransform(redMultiplier = 1.0, greenMultiplier = 1.0, blueMultiplier = 1.0, alphaMultiplier = 1.0,
 			redOffset = 0.0, greenOffset = 0.0, blueOffset = 0.0, alphaOffset = 0.0):Void
 	{
-		color = FlxColor.fromRGBFloat(redMultiplier, greenMultiplier, blueMultiplier).to24Bit();
-		alpha = alphaMultiplier;
-
+		alphaMultiplier = FlxMath.bound(alphaMultiplier, 0, 1);
+		@:bypassAccessor color = FlxColor.fromRGBFloat(redMultiplier, greenMultiplier, blueMultiplier, 1.0);
+		@:bypassAccessor alpha = alphaMultiplier;
+		
 		colorTransform.setMultipliers(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
 		colorTransform.setOffsets(redOffset, greenOffset, blueOffset, alphaOffset);
-
-		useColorTransform = alpha != 1 || color != 0xffffff || colorTransform.hasRGBOffsets();
+		useColorTransform = hasColorTransformRaw();
+		
 		dirty = true;
 	}
 	
+	@:haxe.warning("-WDeprecated")
 	function updateColorTransform():Void
 	{
-		if (colorTransform == null)
-			return;
-
-		useColorTransform = alpha != 1 || color != 0xffffff;
-		if (useColorTransform)
-			colorTransform.setMultipliers(color.redFloat, color.greenFloat, color.blueFloat, alpha);
-		else
-			colorTransform.setMultipliers(1, 1, 1, 1);
-
+		colorTransform.setMultipliers(color.redFloat, color.greenFloat, color.blueFloat, alpha);
+		useColorTransform = hasColorTransformRaw();
+		
 		dirty = true;
+	}
+	
+	/**
+	 * Whether this sprite has a color transform, menaing any of the following: less than full
+	 * `alpha`, a `color` tint, or a `colorTransform` whos values are not the default.
+	 */
+	@:haxe.warning("-WDeprecated")
+	public function hasColorTransform()
+	{
+		return useColorTransform || hasColorTransformRaw();
+	}
+	
+	/**
+	 * Helper for the non-deprecated component of `hasColorTransform`
+	 */
+	function hasColorTransformRaw()
+	{
+		return alpha != 1 || color.rgb != 0xffffff || colorTransform.hasRGBAOffsets();
 	}
 
 	/**
@@ -1298,7 +1320,7 @@ class FlxSprite extends FlxObject
 	{
 		if (_frame == null || !dirty)
 			return framePixels;
-
+		
 		// don't try to regenerate frame pixels if _frame already uses it as source of graphics
 		// if you'll try then it will clear framePixels and you won't see anything
 		if (FlxG.renderTile && _frameGraphic != null)
@@ -1306,10 +1328,10 @@ class FlxSprite extends FlxObject
 			dirty = false;
 			return framePixels;
 		}
-
-		var doFlipX:Bool = checkFlipX();
-		var doFlipY:Bool = checkFlipY();
-
+		
+		final doFlipX = checkFlipX();
+		final doFlipY = checkFlipY();
+		
 		if (!doFlipX && !doFlipY && _frame.type == FlxFrameType.REGULAR)
 		{
 			framePixels = _frame.paint(framePixels, _flashPointZero, false, true);
@@ -1318,12 +1340,12 @@ class FlxSprite extends FlxObject
 		{
 			framePixels = _frame.paintRotatedAndFlipped(framePixels, _flashPointZero, FlxFrameAngle.ANGLE_0, doFlipX, doFlipY, false, true);
 		}
-
-		if (useColorTransform)
+		
+		if (FlxG.renderBlit && hasColorTransform())
 		{
 			framePixels.colorTransform(_flashRect, colorTransform);
 		}
-
+		
 		if (FlxG.renderTile && useFramePixels)
 		{
 			// recreate _frame for native target, so it will use modified framePixels
@@ -1331,7 +1353,7 @@ class FlxSprite extends FlxObject
 			_frameGraphic = FlxGraphic.fromBitmapData(framePixels, false, null, false);
 			_frame = _frameGraphic.imageFrame.frame.copyTo(_frame);
 		}
-
+		
 		dirty = false;
 		return framePixels;
 	}
@@ -1603,25 +1625,24 @@ class FlxSprite extends FlxObject
 	}
 
 	@:noCompletion
-	function set_alpha(Alpha:Float):Float
+	function set_alpha(value:Float):Float
 	{
-		if (alpha == Alpha)
-		{
-			return Alpha;
-		}
-		alpha = FlxMath.bound(Alpha, 0, 1);
+		value = FlxMath.bound(value, 0, 1);
+		if (alpha == value)
+			return value;
+		
+		alpha = value;
 		updateColorTransform();
 		return alpha;
 	}
 
 	@:noCompletion
-	function set_color(Color:FlxColor):Int
+	function set_color(value:FlxColor):Int
 	{
-		if (color == Color)
-		{
-			return Color;
-		}
-		color = Color;
+		if (color == value)
+			return value;
+		
+		color = value;
 		updateColorTransform();
 		return color;
 	}
