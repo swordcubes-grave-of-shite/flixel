@@ -278,7 +278,7 @@ class FlxSprite extends FlxObject
 	public var color(default, set):FlxColor = FlxColor.WHITE;
 	
 	/**
-	 * The color effects of this sprite, changes to `color` or `alplha` will be reflected here
+	 * The color effects of this sprite, changes to `color` or `alpha` will be reflected here
 	 */
 	public var colorTransform(default, null) = new ColorTransform();
 
@@ -1122,6 +1122,9 @@ class FlxSprite extends FlxObject
 	public function setColorTransform(redMultiplier = 1.0, greenMultiplier = 1.0, blueMultiplier = 1.0, alphaMultiplier = 1.0,
 			redOffset = 0.0, greenOffset = 0.0, blueOffset = 0.0, alphaOffset = 0.0):Void
 	{
+		if (colorTransform == null)
+			colorTransform = new ColorTransform();
+
 		alphaMultiplier = FlxMath.bound(alphaMultiplier, 0, 1);
 		@:bypassAccessor color = FlxColor.fromRGBFloat(redMultiplier, greenMultiplier, blueMultiplier, 1.0);
 		@:bypassAccessor alpha = alphaMultiplier;
@@ -1136,6 +1139,9 @@ class FlxSprite extends FlxObject
 	@:haxe.warning("-WDeprecated")
 	function updateColorTransform():Void
 	{
+		if (colorTransform == null)
+			colorTransform = new ColorTransform();
+		
 		colorTransform.setMultipliers(color.redFloat, color.greenFloat, color.blueFloat, alpha);
 		useColorTransform = hasColorTransformRaw();
 		
