@@ -582,7 +582,7 @@ class FlxGraphic implements IFlxDestroyable
 	
 	function checkUseCount()
 	{
-		if (useCount <= 0 && destroyOnNoUse && !persist)
+		if (FlxG.bitmap.autoClearCache && useCount <= 0 && destroyOnNoUse && !persist)
 			FlxG.bitmap.remove(this);
 	}
 
