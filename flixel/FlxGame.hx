@@ -725,11 +725,11 @@ class FlxGame extends Sprite
 	{
 		if (FlxG.fixedTimestep)
 		{
-			FlxG.elapsed = Math.abs(FlxG.timeScale * _stepSeconds); // fixed timestep
+			FlxG.elapsed = Math.max(FlxG.timeScale * _stepSeconds, 0); // fixed timestep
 		}
 		else
 		{
-			FlxG.elapsed = Math.abs(FlxG.timeScale * (_elapsedMS / 1000)); // variable timestep
+			FlxG.elapsed = Math.max(FlxG.timeScale * (_elapsedMS / 1000), 0); // variable timestep
 
 			var max = FlxG.maxElapsed * FlxG.timeScale;
 			if (FlxG.elapsed > max)
