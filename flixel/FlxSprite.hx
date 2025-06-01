@@ -686,7 +686,6 @@ class FlxSprite extends FlxObject
 	{
 		var graph:FlxGraphic = FlxG.bitmap.create(width, height, color, unique, key);
 		frames = graph.imageFrame;
-		antialiasing = false;
 		
 		#if FLX_TRACK_GRAPHICS
 		graph.trackingInfo = '$ID.makeGraphic($width, $height, ${color.toHexString()}, $unique, $key)';
@@ -724,7 +723,7 @@ class FlxSprite extends FlxObject
 		antialiasing = false;
 		
 		#if FLX_TRACK_GRAPHICS
-		graph.trackingInfo = 'makeGraphic($ID, ${color.toHexString()})';
+		graph.trackingInfo = '$ID.makeSolid($width, $height, ${color.toHexString()}, $unique, $key)';
 		#end
 		
 		scale.set(width, height);
