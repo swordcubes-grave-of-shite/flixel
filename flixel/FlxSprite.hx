@@ -1845,7 +1845,7 @@ interface IFlxSprite extends IFlxBasic
 	var x(default, set):Float;
 	var y(default, set):Float;
 	var alpha(default, set):Float;
-	var angle(default, set):Float;
+	var angle(get, set):Float;
 	var facing(default, set):FlxDirectionFlags;
 	var moves(default, set):Bool;
 	var immovable(default, set):Bool;
@@ -1862,3 +1862,4 @@ interface IFlxSprite extends IFlxBasic
 	function reset(X:Float, Y:Float):Void;
 	function setPosition(X:Float = 0, Y:Float = 0):Void;
 }
+
