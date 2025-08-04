@@ -46,6 +46,9 @@ import flixel.input.android.FlxAndroidKeys;
 #if FLX_ACCELEROMETER
 import flixel.input.FlxAccelerometer;
 #end
+#if FLX_GYROSCOPE
+import flixel.input.FlxGyroscope;
+#end
 #if FLX_POINTER_INPUT
 import flixel.input.FlxSwipe;
 #end
@@ -264,6 +267,13 @@ class FlxG
 	 * Provides access to the accelerometer data of mobile devices as `x`/`y`/`z` values.
 	 */
 	public static var accelerometer(default, null):FlxAccelerometer;
+	#end
+
+	#if FLX_GYROSCOPE
+	/**
+	 * Provides access to the accelerometer data of mobile devices as `pitch`/`roll`/`yaw` values.
+	 */
+	public static var gyroscope(default, null):FlxGyroscope;
 	#end
 
 	#if js
@@ -583,6 +593,10 @@ class FlxG
 
 		#if FLX_ACCELEROMETER
 		accelerometer = new FlxAccelerometer();
+		#end
+
+		#if FLX_GYROSCOPE
+		gyroscope = new FlxGyroscope();
 		#end
 
 		#if FLX_SAVE
