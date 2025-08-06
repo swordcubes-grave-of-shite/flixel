@@ -1,5 +1,6 @@
 package flixel.input.actions;
 
+#if FLX_STEAMWRAP
 import flixel.input.IFlxInputManager;
 import flixel.input.actions.FlxActionInput.FlxInputDeviceID;
 #if FLX_STEAMWRAP
@@ -354,3 +355,4 @@ private class FlxSteamUpdater implements IFlxInputManager
 
 	function onFocusLost():Void {}
 }
+#end

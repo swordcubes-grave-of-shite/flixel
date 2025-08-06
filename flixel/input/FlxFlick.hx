@@ -221,9 +221,6 @@ class FlxFlick implements IFlxDestroyable
 	{
 		var dpiScale = FlxG.stage.window.display.dpi / 160; // 160 is baseline "medium" DPI
 		
-		// Clamp the scale to avoid extreme differences
-		dpiScale = FlxMath.bound(dpiScale, 0.5, 2);
-		
 		dpiScale *= 3.5;
 
 		var framerateAmp = 60 / (FlxG.updateFramerate > 60 ? FlxG.updateFramerate : 60) - 0.05;

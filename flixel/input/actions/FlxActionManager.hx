@@ -79,8 +79,10 @@ class FlxActionManager implements IFlxInputManager implements IFlxDestroyable
 		FlxG.gamepads.deviceConnected.add(onDeviceConnected);
 		FlxG.gamepads.deviceDisconnected.add(onDeviceDisconnected);
 		#end
+		#if FLX_STEAMWRAP
 		FlxSteamController.onControllerConnect = updateSteamControllers;
 		FlxSteamController.onOriginUpdate = updateSteamOrigins;
+		#end
 		FlxG.signals.preStateSwitch.add(onStateSwitched);
 	}
 
@@ -565,7 +567,9 @@ private class ActionSetRegister implements IFlxDestroyable
 
 	function new()
 	{
+		#if FLX_STEAMWRAP
 		FlxSteamController.init();
+		#end
 		gamepadSets = [];
 		steamControllerSets = [];
 	}
@@ -675,7 +679,9 @@ private class ActionSetRegister implements IFlxDestroyable
 						clearSetFromArray(ActionSet, steamControllerSets);
 
 					case FlxInputDeviceID.FIRST_ACTIVE:
+						#if FLX_STEAMWRAP
 						steamControllerSets[FlxSteamController.getFirstActiveHandle()] = DoActivate ? ActionSet : -1;
+						#end
 
 					default:
 						steamControllerSets[DeviceID] = DoActivate ? ActionSet : -1;
@@ -852,6 +858,7 @@ private class ActionSetRegister implements IFlxDestroyable
 	 */
 	function changeSteamControllerActionSet(controllerHandle:Int, newSet:Int, sets:Array<FlxActionSet>)
 	{
+		#if FLX_STEAMWRAP
 		var lastSet = FlxSteamController.getCurrentActionSet(controllerHandle);
 		if (lastSet == newSet)
 			return;
@@ -872,6 +879,7 @@ private class ActionSetRegister implements IFlxDestroyable
 
 		// attach inputs for this controller to any steam-aware actions in the new set
 		sets[newSet].attachSteamController(controllerHandle);
+		#end
 	}
 
 	/**
