@@ -1755,7 +1755,8 @@ class FlxCallbackPoint extends FlxBasePoint
 
 	override public function set(x:Float = 0, y:Float = 0):FlxCallbackPoint
 	{
-		super.set(x, y);
+		@:bypassAccessor this.x = x;
+		@:bypassAccessor this.y = y;
 		if (_setXYCallback != null)
 			_setXYCallback(this);
 		return this;

@@ -1668,6 +1668,9 @@ class FlxCamera extends FlxBasic
 		return this;
 	}
 
+	static final bgColorTransformDrawHelper = new ColorTransform();
+	static final matrixDrawHelper = new FlxMatrix();
+
 	/**
 	 * Fill the camera with the specified color.
 	 *
@@ -1690,17 +1693,20 @@ class FlxCamera extends FlxBasic
 		}
 		else
 		{
-			if (FxAlpha == 0)
+			if (FxAlpha == 0 && (!filtersEnabled || filters == null || filters.length == 0))
 				return;
 
-			final targetGraphics = (graphics == null) ? canvas.graphics : graphics;
+			final colorHelper:FlxColor = Std.int(FxAlpha * 0xFF) << 24 | Color.rgb;
 
-			targetGraphics.overrideBlendMode(null);
-			targetGraphics.beginFill(Color, FxAlpha);
-			// i'm drawing rect with these parameters to avoid light lines at the top and left of the camera,
-			// which could appear while cameras fading
-			targetGraphics.drawRect(viewMarginLeft - 1, viewMarginTop - 1, viewWidth + 2, viewHeight + 2);
-			targetGraphics.endFill();
+			final matrix = matrixDrawHelper;
+			matrix.identity();
+			matrix.scale(0.1 * (viewWidth + 2), 0.1 * (viewHeight + 2));
+			matrix.translate(viewMarginLeft - 1, viewMarginTop - 1);
+
+			final colorTransform = bgColorTransformDrawHelper.reset();
+			colorTransform.setMultipliers(colorHelper);
+			drawPixels(FlxG.bitmap.whitePixel, null, matrix, colorTransform, null, antialiasing);
+			render(); // manually call render since it literally just Won't otherwise
 		}
 	}
 
