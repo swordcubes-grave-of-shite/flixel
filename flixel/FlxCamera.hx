@@ -1705,7 +1705,7 @@ class FlxCamera extends FlxBasic
 
 			final colorTransform = bgColorTransformDrawHelper.reset();
 			colorTransform.setMultipliers(colorHelper);
-			drawPixels(FlxG.bitmap.whitePixel, null, matrix, colorTransform, null, antialiasing);
+			drawPixels(FlxG.bitmap.whitePixel, null, matrix, colorTransform, null, false);
 			render(); // manually call render since it literally just Won't otherwise
 		}
 	}
