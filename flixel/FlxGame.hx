@@ -80,7 +80,7 @@ class FlxGame extends Sprite
 	/**
 	 * Enables or disables the filters set via `setFilters()`.
 	 */
-	public var filtersEnabled(default, set):Bool = true;
+	public var filtersEnabled:Bool = true;
 
 	/**
 	 * A flag for triggering the `preGameStart` and `postGameStart` "events".
@@ -281,14 +281,6 @@ class FlxGame extends Sprite
 	public function setFilters(filters:Array<BitmapFilter>):Void
 	{
 		_filters = filters;
-		this.filters = filtersEnabled ? _filters : null;
-	}
-
-	function set_filtersEnabled(enabled:Bool):Bool
-	{
-		filtersEnabled = enabled;
-		this.filters = filtersEnabled ? _filters : null;
-		return enabled;
 	}
 
 	/**
@@ -725,8 +717,7 @@ class FlxGame extends Sprite
 		}
 		#end
 
-		// set in setFilters() and set_filtersEnabled() now
-		// filters = filtersEnabled ? _filters : null;
+		filters = filtersEnabled ? _filters : null;
 	}
 
 	function updateElapsed():Void
