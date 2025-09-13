@@ -363,7 +363,7 @@ class FlxCamera extends FlxBasic
 	/**
 	 * Enables or disables the filters set via the `filters` array.
 	 */
-	public var filtersEnabled:Bool = true;
+	public var filtersEnabled(default, set):Bool = true;
 
 	/**
 	 * Internal, used in blit render mode in camera's `fill()` method for less garbage creation.
@@ -1153,7 +1153,8 @@ class FlxCamera extends FlxBasic
 		updateFlash(elapsed);
 		updateFade(elapsed);
 
-		flashSprite.filters = filtersEnabled ? filters : null;
+		// set in set_filters and set_filtersEnabled now
+		// flashSprite.filters = filtersEnabled ? filters : null;
 
 		updateFlashSpritePosition();
 		updateShake(elapsed);
@@ -2050,6 +2051,7 @@ class FlxCamera extends FlxBasic
 	function set_filters(newFilters:Null<Array<BitmapFilter>>):Null<Array<BitmapFilter>>
 	{
 		filters = newFilters;
+		flashSprite.filters = filtersEnabled ? filters : null;
 
 		if (flashSprite != null)
 		{
@@ -2058,6 +2060,20 @@ class FlxCamera extends FlxBasic
 		fixSpriteShaderSize(FlxG.game);
 
 		return filters;
+	}
+
+	function set_filtersEnabled(enabled:Bool):Bool
+	{
+		filtersEnabled = enabled;
+		flashSprite.filters = filtersEnabled ? filters : null;
+
+		if (flashSprite != null)
+		{
+			fixSpriteShaderSize(flashSprite);
+		}
+		fixSpriteShaderSize(FlxG.game);
+		
+		return enabled;
 	}
 
 	override function set_visible(visible:Bool):Bool
