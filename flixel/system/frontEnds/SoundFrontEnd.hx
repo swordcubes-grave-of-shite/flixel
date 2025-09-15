@@ -72,6 +72,11 @@ class SoundFrontEnd
 	 * changed by the player.
 	 */
 	public var acceptInputs:Bool = true;
+
+	/**
+	 * The amount to change the volume by when the volume keys are pressed.
+	 */
+	public var amountChange:Float = 0.1;
 	
 	#if FLX_SOUND_TRAY
 	/**
@@ -439,9 +444,9 @@ class SoundFrontEnd
 			if (FlxG.keys.anyJustReleased(muteKeys))
 				toggleMuted();
 			else if (FlxG.keys.anyJustReleased(volumeUpKeys))
-				changeVolume(0.1);
+				changeVolume(amountChange);
 			else if (FlxG.keys.anyJustReleased(volumeDownKeys))
-				changeVolume(-0.1);
+				changeVolume(-amountChange);
 		}
 		#end
 	}
