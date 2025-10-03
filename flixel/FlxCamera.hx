@@ -751,7 +751,9 @@ class FlxCamera extends FlxBasic
 		var currItem:FlxDrawBaseItem<Dynamic> = _headOfDrawStack;
 		while (currItem != null)
 		{
-			currItem.render(this);
+			try {
+				currItem.render(this);
+			} catch(e) {}
 			currItem = currItem.next;
 		}
 	}
