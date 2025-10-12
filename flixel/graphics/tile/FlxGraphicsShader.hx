@@ -74,9 +74,13 @@ class FlxGraphicsShader extends GraphicsShader
 		vec4 textureCam(sampler2D bitmap, vec2 pos) {
 			return flixel_texture2D(bitmap, camToOg(pos));
 		}", true)
-	@:glFragmentBody("
-		ofl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv);
-	", true)
+	@:glFragmentSource("
+		#pragma header
+		void main(void)
+		{
+			gl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv);
+		}
+	")
 	public function new()
 	{
 		super();
