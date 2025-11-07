@@ -48,6 +48,10 @@ private enum UserDefines
 	/** Adds `creationInfo` to FlxGraphic instances, automatically defined with FLX_DEBUG */
 	FLX_TRACK_GRAPHICS;
 	/**
+	 * Adds `activeCount` and `visibleCount` to FlxBasic, for tracking update and draw calls
+	 */
+	FLX_TRACK_PERFORMANCE;
+	/**
 	 * Loads from the specified relative or absolute directory. Unlike other boolean flags,
 	 * this flag should contain a string value.
 	 * 
@@ -70,6 +74,7 @@ private enum UserDefines
 	 * Used to make the debug windows bigger
 	 */
 	FLX_DEBUGGER_SCALE;
+
 }
 
 /**
@@ -114,6 +119,7 @@ private enum HelperDefines
 	FLX_HEALTH_NOT_DEFINED;
 	FLX_NO_TRACK_POOLS;
 	FLX_NO_TRACK_GRAPHICS;
+	FLX_NO_TRACK_PERFORMANCE;
 	FLX_OPENGL_AVAILABLE;
 	/** Defined to `1`(or `true`) if `FLX_CUSTOM_ASSETS_DIRECTORY` is not defined */
 	FLX_STANDARD_ASSETS_DIRECTORY;
@@ -288,8 +294,10 @@ class FlxDefines
 		if (defined(FLX_TRACK_POOLS) && !defined("debug"))
 			abort("Can only define FLX_TRACK_POOLS on debug mode", (macro null).pos);
 		
-		if (defined(FLX_DEBUG))
+		if (defined(FLX_DEBUG)) {
 			define(FLX_TRACK_GRAPHICS);
+			define(FLX_TRACK_PERFORMANCE);
+		}
 
 		#if (lime_opengl || lime_opengles || lime_webgl)
 		// FlxG.stage.window.context.attributes.hardware is not always defined during unit tests
@@ -298,6 +306,7 @@ class FlxDefines
 		#end
 		
 		defineInversion(FLX_TRACK_GRAPHICS, FLX_NO_TRACK_GRAPHICS);
+		defineInversion(FLX_TRACK_PERFORMANCE, FLX_NO_TRACK_PERFORMANCE);
 		
 		if (defined(FLX_CUSTOM_ASSETS_DIRECTORY))
 		{

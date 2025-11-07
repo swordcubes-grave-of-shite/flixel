@@ -513,7 +513,7 @@ class FlxGame extends Sprite
 				step();
 			}
 
-			#if FLX_DEBUG
+			#if FLX_TRACK_PERFORMANCE
 			FlxBasic.visibleCount = 0;
 			#end
 
@@ -631,7 +631,7 @@ class FlxGame extends Sprite
 
 		handleReplayRequests();
 
-		#if FLX_DEBUG
+		#if FLX_TRACK_PERFORMANCE
 		// Finally actually step through the game physics
 		FlxBasic.activeCount = 0;
 		#end

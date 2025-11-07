@@ -10,15 +10,10 @@ import flixel.util.FlxStringUtil;
  */
 class FlxBasic implements IFlxDestroyable
 {
-	#if FLX_DEBUG
-	/**
-	 * Static counters for performance tracking.
-	 */
-	@:allow(flixel.FlxGame)
-	static var activeCount:Int = 0;
-
-	@:allow(flixel.FlxGame)
-	static var visibleCount:Int = 0;
+	#if FLX_TRACK_PERFORMANCE
+	// Static counters for performance tracking.
+	public static var activeCount:Int = 0;
+	public static var visibleCount:Int = 0;
 	#end
 
 	/**
@@ -133,7 +128,7 @@ class FlxBasic implements IFlxDestroyable
 	 */
 	public function update(elapsed:Float):Void
 	{
-		#if FLX_DEBUG
+		#if FLX_TRACK_PERFORMANCE
 		activeCount++;
 		#end
 	}
@@ -144,7 +139,7 @@ class FlxBasic implements IFlxDestroyable
 	 */
 	public function draw():Void
 	{
-		#if FLX_DEBUG
+		#if FLX_TRACK_PERFORMANCE
 		visibleCount++;
 		#end
 	}

@@ -952,7 +952,7 @@ class FlxSprite extends FlxObject
 		drawFrameComplex(_frame, camera);
 	}
 	
-	function drawFrameComplex(frame:FlxFrame, camera:FlxCamera):Void
+	function prepareMatrix(frame:FlxFrame, camera:FlxCamera):FlxMatrix
 	{
 		final matrix = this._matrix; // TODO: Just use local?
 		frame.prepareMatrix(matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
@@ -988,9 +988,14 @@ class FlxSprite extends FlxObject
 			matrix.tx = Math.floor(matrix.tx);
 			matrix.ty = Math.floor(matrix.ty);
 		}
-
-		camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
 		_animOffset.putWeak();
+		return matrix;
+	}
+
+	function drawFrameComplex(frame:FlxFrame, camera:FlxCamera):Void
+	{
+		final matrix:FlxMatrix = prepareMatrix(frame, camera);
+		camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
 	}
 
 	/**
