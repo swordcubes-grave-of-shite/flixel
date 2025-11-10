@@ -1,5 +1,6 @@
 package flixel.system;
 
+import haxe.io.Path;
 import haxe.macro.Expr;
 #if !macro
 import flixel.FlxG;
