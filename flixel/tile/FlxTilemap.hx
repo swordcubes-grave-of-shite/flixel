@@ -669,7 +669,7 @@ class FlxTypedTilemap<Tile:FlxTile> extends FlxBaseTilemap<Tile>
 				drawTilemap(buffer, camera);
 			}
 
-			#if FLX_DEBUG
+			#if FLX_TRACK_PERFORMANCE
 			FlxBasic.visibleCount++;
 			#end
 		}

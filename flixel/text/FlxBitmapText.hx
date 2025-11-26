@@ -430,7 +430,7 @@ class FlxBitmapText extends FlxSprite
 				
 				borderDrawData.forEach(addQuad.bind(_, _, _, borderColorTransform));
 				textDrawData.forEach(addQuad.bind(_, _, _, textColorTransform));
-				#if FLX_DEBUG
+				#if FLX_TRACK_PERFORMANCE
 				FlxBasic.visibleCount++;
 				#end
 			}
