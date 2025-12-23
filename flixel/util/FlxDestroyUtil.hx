@@ -83,6 +83,11 @@ class FlxDestroyUtil
 	{
 		if (bitmapData != null)
 		{
+			@:privateAccess {
+				if (bitmapData.__texture != null)
+					bitmapData.__texture.dispose();
+			}
+			bitmapData.disposeImage();
 			bitmapData.dispose();
 		}
 		return null;
