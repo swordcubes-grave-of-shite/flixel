@@ -879,8 +879,10 @@ class FlxText extends FlxSprite
 
 	override function updateColorTransform():Void
 	{
-		colorTransform.alphaMultiplier = alpha;
+		if(colorTransform == null)
+			colorTransform = new ColorTransform();
 
+		colorTransform.alphaMultiplier = alpha;
 		dirty = true;
 	}
 
