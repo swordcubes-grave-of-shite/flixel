@@ -105,7 +105,7 @@ We removed many features and utilities that were previously deprecated
 - `FlxTilemap.useScaleHack`: No longer needed, due to `defaultFramePadding`
 - `FlxG.signals.stateSwitched` and `gameStarted`: Use `preStateSwitch` and `postGameStart`, respectively
 - `FlxPath` (Legacy types): Use `FlxPathType`, instead
-- `flixel.sound.FlxSound` and `FlxSoundGroup`: new package, `flixel.sound`
+- `flixel.system.FlxSound` and `FlxSoundGroup`: new package, `flixel.sound`
 - `FlxState::switchTo`: Use `startOutro`, instead
 - `FlxAnimation::delay`: Use `frameDuration`, instead
 - `FlxCollision.pixelPerfectPointCheck`: Use `FlxSprite::pixelsOverlapPoint`, instead
