@@ -9,6 +9,13 @@ using flixel.util.FlxStringUtil;
  * A class that allows you to create a custom style for `FlxG.log.advanced()`.
  * Also used internally for the pre-defined styles.
  */
+#if (cpp && windows)
+@:headerCode('
+// Needed otherwise windows build fails :(
+// But why?
+#undef ERROR
+')
+#end
 class LogStyle
 {
 	public static var NORMAL:LogStyle = new LogStyle();
@@ -43,21 +50,21 @@ class LogStyle
 	 */
 	@:deprecated("callbackFunction is deprecated, use callback, instead")
 	public var callbackFunction:()->Void;
-	
+
 	/**
 	 * A callback function that is called when this LogStyle is used
 	 * **Note:** Unlike the deprecated `callbackFunction`, this is called every time,
 	 * even when logged with `once = true` and even in release mode.
 	 */
 	public final onLog = new FlxTypedSignal<(data:Any, ?pos:PosInfos) -> Void>();
-	
+
 	/**
 	 * Whether an exception is thrown when this LogStyle is used.
 	 * **Note**: Unlike other log style properties, this happens even in release mode.
 	 * @since 5.4.0
 	 */
 	public var throwException:Bool = false;
-	
+
 	/**
 	 * Create a new LogStyle to be used in conjunction with `FlxG.log.advanced()`
 	 *
@@ -90,10 +97,10 @@ class LogStyle
 			onLog.add(callback);
 		this.throwException = throwException;
 	}
-	
+
 	/**
 	 * Converts the data into a log message according to this style.
-	 * 
+	 *
 	 * @param   data  The data being logged
 	 */
 	public function toLogString(data:Array<Any>)
@@ -103,17 +110,17 @@ class LogStyle
 		for (i in 0...data.length)
 		{
 			final text = Std.string(data[i]);
-			
+
 			// Make sure you can't insert html tags
 			texts.push(StringTools.htmlEscape(text));
 		}
-		
+
 		return prefix + texts.join(" ");
 	}
-	
+
 	/**
 	 * Converts the data into an html log message according to this style.
-	 * 
+	 *
 	 * @param   data  The data being logged
 	 */
 	public inline function toHtmlString(data:Array<Any>)
