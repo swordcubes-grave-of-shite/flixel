@@ -136,7 +136,7 @@ class FlxActionDigital extends FlxAction
 	 * @param	Key	Android button key, BACK, or MENU probably (might need to set FlxG.android.preventDefaultKeys to disable the default behaviour and allow proper use!)
 	 * @param	Trigger		What state triggers this action (PRESSED, JUST_PRESSED, RELEASED, JUST_RELEASED)
 	 * @return	This action
-	 * 
+	 *
 	 * @since 4.10.0
 	 */
 	public function addAndroidKey(Key:FlxAndroidKey, Trigger:FlxInputState):FlxActionDigital
@@ -341,7 +341,7 @@ class FlxAction implements IFlxDestroyable
 	var _x:Null<Float> = null;
 	var _y:Null<Float> = null;
 
-	var _timestamp:Float = 0;
+	var _check:Bool = false;
 	@:deprecated("_checked is deprecated, use triggered, instead")
 	var _checked:Bool = false;
 
@@ -436,32 +436,32 @@ class FlxAction implements IFlxDestroyable
 	 */
 	public function check():Bool
 	{
-		if (_timestamp == FlxG.game.ticks)
+		if (_check)
 			return triggered; // run no more than once per frame
-		
+
 		_x = null;
 		_y = null;
-		
-		_timestamp = FlxG.game.ticks;
+
+		_check = false;
 		triggered = false;
-		
+
 		var i = inputs != null ? inputs.length : 0;
 		while (i-- > 0) // Iterate backwards, since we may remove items
 		{
 			final input = inputs[i];
-			
+
 			if (input.destroyed)
 			{
 				inputs.remove(input);
 				continue;
 			}
-			
+
 			input.update();
-			
+
 			if (input.check(this))
 				triggered = true;
 		}
-		
+
 		return triggered;
 	}
 
@@ -470,6 +470,7 @@ class FlxAction implements IFlxDestroyable
 	 */
 	public function update():Void
 	{
+		_check = true;
 		check();
 	}
 
