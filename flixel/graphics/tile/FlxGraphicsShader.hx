@@ -12,7 +12,7 @@ class FlxGraphicsShader extends GraphicsShader
 	", true)
 	@:glVertexBody("
 		openfl_Alphav = openfl_Alpha * alpha;
-		
+
 		if (hasColorTransform)
 		{
 			if (openfl_HasColorTransform)
@@ -35,27 +35,32 @@ class FlxGraphicsShader extends GraphicsShader
 			vec4 color = texture2D(bitmap, coord);
 			if (!(hasTransform || openfl_HasColorTransform))
 				return color;
-			
+
 			if (color.a == 0.0)
 				return vec4(0.0, 0.0, 0.0, 0.0);
-			
+
 			if (openfl_HasColorTransform || hasColorTransform)
 			{
 				color = vec4 (color.rgb / color.a, color.a);
 				vec4 mult = vec4 (openfl_ColorMultiplierv.rgb, 1.0);
 				color = clamp (openfl_ColorOffsetv + (color * mult), 0.0, 1.0);
-				
+
 				if (color.a == 0.0)
 					return vec4 (0.0, 0.0, 0.0, 0.0);
-				
+
 				return vec4 (color.rgb * color.a * openfl_Alphav, color.a * openfl_Alphav);
 			}
-			
+
 			return color * openfl_Alphav;
 		}
 	", true)
-	@:glFragmentBody("
-		gl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv);
+	@:glFragmentSource("
+		#pragma header
+
+		void main(void)
+		{
+			gl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv);
+		}
 	", true)
 	public function new()
 	{
