@@ -223,11 +223,11 @@ class FlxGame extends Sprite
 	 * Instantiate a new game object.
 	 *
 	 * @param gameWidth        The width of your game in pixels. If `0`, the `Project.xml` width is used.
-	 *                         If the demensions don't match the `Project.xml`, 
+	 *                         If the demensions don't match the `Project.xml`,
 	 *                         [`scaleMode`](https://api.haxeflixel.com/flixel/system/scaleModes/index.html)
 	 *                         will determine the actual display size of the game.
 	 * @param gameHeight       The height of your game in pixels. If `0`, the `Project.xml` height is used.
-	 *                         If the demensions don't match the `Project.xml`, 
+	 *                         If the demensions don't match the `Project.xml`,
 	 *                         [`scaleMode`](https://api.haxeflixel.com/flixel/system/scaleModes/index.html)
 	 *                         will determine the actual display size of the game.
 	 * @param initialState     A constructor for the initial state, ex: `PlayState.new` or `()->new PlayState()`.
@@ -537,7 +537,7 @@ class FlxGame extends Sprite
 		#if FLX_DEBUG
 		_skipSplash = true;
 		#end
-		
+
 		if (_skipSplash)
 		{
 			_nextState = _initialState;
@@ -552,6 +552,13 @@ class FlxGame extends Sprite
 		FlxG.reset();
 
 		FlxG.signals.postGameReset.dispatch();
+	}
+
+	function getNextState():FlxState
+	{
+		final state:FlxState = _nextState.createInstance();
+		state._constructor = _nextState.getConstructor();
+		return state;
 	}
 
 	/**
@@ -583,8 +590,7 @@ class FlxGame extends Sprite
 			FlxG.bitmap.clearCache();
 
 		// Finally assign and create the new state
-		_state = _nextState.createInstance();
-		_state._constructor = _nextState.getConstructor();
+		_state = getNextState();
 		_nextState = null;
 
 		if (_gameJustStarted)
@@ -607,7 +613,7 @@ class FlxGame extends Sprite
 
 		FlxG.signals.postStateSwitch.dispatch();
 	}
-	
+
 	function gameStart()
 	{
 		FlxG.signals.postGameStart.dispatch();
@@ -689,7 +695,7 @@ class FlxGame extends Sprite
 
 		updateElapsed();
 		updateInput();
-		
+
 		FlxG.signals.preUpdate.dispatch();
 
 		#if FLX_SOUND_SYSTEM
