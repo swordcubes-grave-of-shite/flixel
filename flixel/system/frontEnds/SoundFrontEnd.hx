@@ -596,7 +596,7 @@ class SoundFrontEnd
 
 		for (sound in list.members)
 		{
-			if (sound != null)
+			if (sound != null && sound != music)
 			{
 				sound.onFocusLost();
 			}
@@ -613,7 +613,7 @@ class SoundFrontEnd
 
 		for (sound in list.members)
 		{
-			if (sound != null)
+			if (sound != null && sound != music)
 			{
 				sound.onFocus();
 			}
