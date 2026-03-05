@@ -242,7 +242,7 @@ class FlxAnimationController implements IFlxDestroyable
 		var framesToAdd:Array<Int> = frames;
 		var hasInvalidFrames = false;
 		var i = framesToAdd.length;
-		while (i-- >= 0)
+		while (i-- > 0)
 		{
 			final frame = framesToAdd[i];
 			if (frame >= numFrames)
