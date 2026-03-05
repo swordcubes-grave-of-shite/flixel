@@ -437,16 +437,21 @@ class FlxMouse extends FlxPointer implements IFlxInputManager
 	 * @param   cursorData   MouseCursorData contains the bitmap, hotspot etc
 	 * @since   4.2.0
 	 */
-	public function registerSimpleNativeCursorData(name:String, cursorBitmap:BitmapData):MouseCursorData
+	public function registerSimpleNativeCursorData(name:String, cursorBitmap:BitmapData, ?hotSpot:Point):MouseCursorData
 	{
 		var cursorVector = new Vector<BitmapData>();
 		cursorVector[0] = cursorBitmap;
 
 		if (cursorBitmap.width > 32 || cursorBitmap.height > 32)
 			throw "BitmapData files used for native cursors cannot exceed 32x32 pixels due to an OS limitation.";
-
+		
+		if(hotSpot == null)
+			hotSpot = new Point();
+		else if (hotSpot.x < 0 || hotSpot.y < 0 || hotSpot.x > cursorBitmap.width || hotSpot.y > cursorBitmap.height)
+			throw 'Invalid hotSpot: $hotSpot';
+		
 		var cursorData = new MouseCursorData();
-		cursorData.hotSpot = new Point(0, 0);
+		cursorData.hotSpot = hotSpot;
 		cursorData.data = cursorVector;
 
 		registerNativeCursor(name, cursorData);
@@ -669,6 +674,8 @@ class FlxMouse extends FlxPointer implements IFlxInputManager
 		// Call set_visible with the value visible has been initialized with
 		// (unless set in create() of the initial state)
 		set_visible(visible);
+
+		_visibleWhenFocusLost = visible;
 	}
 
 	/**
@@ -696,7 +703,7 @@ class FlxMouse extends FlxPointer implements IFlxInputManager
 	#end
 
 	@:noCompletion
-	function get_justMoved():Bool
+	inline function get_justMoved():Bool
 		return _prevX != x || _prevY != y;
 
 	@:noCompletion
@@ -776,19 +783,19 @@ class FlxMouse extends FlxPointer implements IFlxInputManager
 		return deltaViewY;
 
 	@:noCompletion
-	function get_pressed():Bool
+	inline function get_pressed():Bool
 		return _leftButton.pressed;
 
 	@:noCompletion
-	function get_justPressed():Bool
+	inline function get_justPressed():Bool
 		return _leftButton.justPressed;
 
 	@:noCompletion
-	function get_released():Bool
+	inline function get_released():Bool
 		return _leftButton.released;
 
 	@:noCompletion
-	function get_justReleased():Bool
+	inline function get_justReleased():Bool
 		return _leftButton.justReleased;
 
 	@:noCompletion

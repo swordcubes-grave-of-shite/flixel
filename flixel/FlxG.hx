@@ -103,7 +103,9 @@ class FlxG
 	 * The HaxeFlixel version, in semantic versioning syntax. Use `Std.string()`
 	 * on it to get a `String` formatted like this: `"HaxeFlixel MAJOR.MINOR.PATCH-COMMIT_SHA"`.
 	 */
-	public static final VERSION = new FlxVersion(6, 1, 1);
+	#if !macro
+	public static final VERSION:FlxVersion = new flixel.system.FlxAutoVersion<"flixel">();
+	#end
 
 	/**
 	 * Internal tracker for game object.
@@ -537,14 +539,9 @@ class FlxG
 	 */
 	public static inline function openURL(url:String, target = "_blank"):Void
 	{
-		// Ensure you can't open protocols such as steam://, file://, etc
-	    var protocol:Array<String> = url.split("://");
-	    if (protocol.length == 1)
-			url = 'https://${url}';
-
-	    else if (protocol[0] != 'http' && protocol[0] != 'https')
-			throw "openURL can only open http and https links.";
-
+		// if the url does not already start with a protocol, add it.
+		if (!~/^.\w+?:\/*/.match(url))
+			url = "https://" + url;
 		Lib.getURL(new URLRequest(url), target);
 	}
 
@@ -564,6 +561,10 @@ class FlxG
 		FlxG.height = height;
 
 		initRenderMethod();
+		#if FLX_OPENGL_AVAILABLE
+		// Query once when window is created and cache for later
+		bitmap.get_maxTextureSize();
+		#end
 
 		FlxG.initialWidth = width;
 		FlxG.initialHeight = height;
