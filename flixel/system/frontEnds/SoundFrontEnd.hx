@@ -591,9 +591,7 @@ class SoundFrontEnd
 	{
 		if (music != null)
 		{
-			trace(@:privateAccess music._paused);
 			music.onFocusLost();
-			trace(@:privateAccess music._resumeOnFocus);
 		}
 
 		for (sound in list.members)
