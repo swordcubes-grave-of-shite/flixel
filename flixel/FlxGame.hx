@@ -860,7 +860,7 @@ class FlxGame extends Sprite
 	dynamic function getTimer():Float
 	{
 		// expensive, only call if necessary
-		return System.getTimerPrecise();
+		return System.getTimer();
 	}
 }
 
