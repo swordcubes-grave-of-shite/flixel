@@ -611,7 +611,7 @@ class FlxGraphic implements IFlxDestroyable
 
 	inline function get_bitmap():FlxBitmap
 	{
-		return texture.getBitmap();
+		return (texture != null) ? texture.getBitmap() : null;
 	}
 
 	function set_bitmap(value:FlxBitmap):FlxBitmap
