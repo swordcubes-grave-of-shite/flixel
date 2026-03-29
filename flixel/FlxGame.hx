@@ -814,14 +814,13 @@ class FlxGame extends Sprite
 
 		FlxG.signals.preDraw.dispatch();
 
-		if (FlxG.renderTile)
-			FlxDrawBaseItem.drawCalls = 0;
+		FlxG.renderer.totalDrawCalls = 0;
 
-		FlxG.cameras.lock();
+		FlxG.cameras.clear();
 
 		if (FlxG.plugins.drawOnTop)
 		{
-			if (_state != null && (_state.active && _state.exists))
+			if (_state != null && (_state.visible && _state.exists))
 				_state.draw();
 
 			FlxG.plugins.draw();
@@ -830,20 +829,18 @@ class FlxGame extends Sprite
 		{
 			FlxG.plugins.draw();
 
-			if (_state != null && (_state.active && _state.exists))
+			if (_state != null && (_state.visible && _state.exists))
 				_state.draw();
 		}
 
-		if (FlxG.renderTile)
-		{
-			FlxG.cameras.render();
+		FlxG.cameras.render();
 
+		if (FlxG.renderer.tile)
+		{
 			#if FLX_DEBUG
-			debugger.stats.drawCalls(FlxDrawBaseItem.drawCalls);
+			debugger.stats.drawCalls(FlxG.renderer.totalDrawCalls);
 			#end
 		}
-
-		FlxG.cameras.unlock();
 
 		FlxG.signals.postDraw.dispatch();
 

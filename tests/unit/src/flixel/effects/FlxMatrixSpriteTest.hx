@@ -14,9 +14,9 @@ class FlxMatrixSpriteTest extends FlxTest
 	{
 		sprite = new FlxMatrixSprite();
 		sprite.makeGraphic(2, 2);
-		sprite.graphic.bitmap.setPixel32(0, 0, 0xFFff0000);
-		sprite.graphic.bitmap.setPixel32(1, 0, 0xFF00ff00);
-		sprite.graphic.bitmap.setPixel32(0, 1, 0xFF0000ff);
+		sprite.graphic.texture.getBitmap().setPixel32(0, 0, 0xFFff0000);
+		sprite.graphic.texture.getBitmap().setPixel32(1, 0, 0xFF00ff00);
+		sprite.graphic.texture.getBitmap().setPixel32(0, 1, 0xFF0000ff);
 	}
 	
 	@Test

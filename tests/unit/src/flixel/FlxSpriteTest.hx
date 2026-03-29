@@ -507,7 +507,7 @@ class FlxSpriteTest extends FlxTest
 		sprite1.x = 100;
 		sprite1.y = 0;
 		sprite1.makeGraphic(100, 100, WHITE);
-		sprite1.graphic.bitmap.fillRect(new openfl.geom.Rectangle(50, 50, 50, 50), BLACK);
+		sprite1.graphic.texture.getBitmap().fillRect(new openfl.geom.Rectangle(50, 50, 50, 50), BLACK);
 		
 		final worldPos = FlxPoint.get();
 		

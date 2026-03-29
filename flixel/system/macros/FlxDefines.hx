@@ -54,7 +54,7 @@ private enum UserDefine
 	/**
 	 * Loads from the specified relative or absolute directory. Unlike other boolean flags,
 	 * this flag should contain a string value.
-	 * 
+	 *
 	 * **Note:** When using assets entirely from outside the build directory, it is wise to disable
 	 * any `</asset>` tags in your project.xml, to reduce your total memory
 	 */
@@ -69,7 +69,7 @@ private enum UserDefine
 	 * If this flag is set to any string, that is used for the file extension
 	 */
 	FLX_DEFAULT_SOUND_EXT;
-	
+
 	/**
 	 * Used to make the debug windows bigger
 	 */
@@ -80,18 +80,23 @@ private enum UserDefine
 	 * `NOTICE`, `NORMAL` or `NONE`. If undefined, `NONE` is used.
 	 */
 	FLX_LOG_THROW;
-	
+
 	/**
 	 * Determines which `FlxG.log` calls will play a sound. Use values `ERROR`, `WARNING`,
 	 * `NOTICE`, `NORMAL` or `NONE`. If undefined, `WARNING` is used.
 	 */
 	FLX_LOG_PLAY_SOUND;
-	
+
 	/**
 	 * Determines which `FlxG.log` calls will show the debugger. Use values `ERROR`, `WARNING`,
 	 * `NOTICE`, `NORMAL` or `NONE`. Ignored if `FLX_NO_DEBUG` is defined. If undefined, `NOTICE` is used.
 	 */
 	FLX_LOG_OPEN_CONSOLE;
+
+	/**
+	 * Enables the experimental Context3D renderer
+	 */
+	FLX_RENDER_CONTEXT3D;
 }
 
 /**
@@ -147,6 +152,7 @@ private enum HelperDefine
 	FLX_NO_DEFAULT_SOUND_EXT;
 	/** Enables audio streaming related APIs */
 	FLX_STREAM_SOUND;
+	FLX_RENDER_DRAWQUADS;
 }
 
 class FlxDefines
@@ -159,10 +165,10 @@ class FlxDefines
 		if (defined("flash"))
 			checkSwfVersion();
 		#end
-		
+
 		defineInversions();
 		defineHelperDefine();
-		
+
 		#if (flixel_addons >= "3.2.2")
 		flixel.addons.system.macros.FlxAddonDefines.run();
 		#end
@@ -180,7 +186,7 @@ class FlxDefines
 		#if !nme
 		checkOpenFLVersions();
 		#end
-		
+
 		#if (flixel_addons < version("3.3.0"))
 		abortVersion("Flixel Addons", "3.3.0 or newer", "flixel-addons", (macro null).pos);
 		#end
@@ -218,7 +224,7 @@ class FlxDefines
 			}
 		}
 	}
-	
+
 	static var userDefinable = UserDefine.getConstructors();
 	static function isValidUserDefine(define:String)
 	{
@@ -262,7 +268,7 @@ class FlxDefines
 			define(FLX_CI);
 		else
 			define(FLX_NO_CI);
-		
+
 		if (!defined(FLX_NO_MOUSE) && !defined(FLX_NO_MOUSE_ADVANCED) && (!defined("flash") || defined("flash11_2")))
 			define(FLX_MOUSE_ADVANCED);
 
@@ -277,13 +283,13 @@ class FlxDefines
 
 		if (!defined(FLX_NO_PITCH))
 			define(FLX_PITCH);
-		
+
 		if (!defined(FLX_NO_SAVE))
 			define(FLX_SAVE);
 
 		if (!defined(FLX_NO_VALIDATE_CUSTOM_ASSETS_DIRECTORY))
 			define(FLX_VALIDATE_CUSTOM_ASSETS_DIRECTORY);
-		
+
 		if (!defined("flash") || defined("flash11_8"))
 			define(FLX_GAMEINPUT_API);
 		else if (!defined("openfl_next") && (defined("cpp") || defined("neko")))
@@ -309,10 +315,10 @@ class FlxDefines
 		// should always be defined as of 5.5.1 and, therefore, deprecated
 		define(FLX_DRAW_QUADS);
 		// #end
-		
+
 		if (defined(FLX_TRACK_POOLS) && !defined("debug"))
 			abort("Can only define FLX_TRACK_POOLS on debug mode", (macro null).pos);
-		
+
 		if (defined(FLX_DEBUG)) {
 			define(FLX_TRACK_GRAPHICS);
 			define(FLX_TRACK_PERFORMANCE);
@@ -324,9 +330,21 @@ class FlxDefines
 			define(FLX_OPENGL_AVAILABLE);
 		#end
 		
+		if (defined(FLX_RENDER_CONTEXT3D))
+		{
+			if (!defined(FLX_OPENGL_AVAILABLE))
+				abort("Can only define FLX_RENDER_OPENGL on a target that supports OpenGL", (macro null).pos);
+
+			// Disable OpenFL's GL context cache to avoid desync issues between
+			// The Flixel renderer and the OpenFL Context3D renderer
+			define("openfl_disable_context_cache");
+		}
+		else
+			define(FLX_RENDER_DRAWQUADS);
+
 		defineInversion(FLX_TRACK_GRAPHICS, FLX_NO_TRACK_GRAPHICS);
 		defineInversion(FLX_TRACK_PERFORMANCE, FLX_NO_TRACK_PERFORMANCE);
-		
+
 		if (defined(FLX_CUSTOM_ASSETS_DIRECTORY))
 		{
 			if (!defined("sys"))
@@ -362,7 +380,7 @@ class FlxDefines
 		#if lime_vorbis
 		define(FLX_STREAM_SOUND);
 		#end
-		
+
 		validateLogLevel(FLX_LOG_THROW);
 		validateLogLevel(FLX_LOG_PLAY_SOUND);
 		validateLogLevel(FLX_LOG_OPEN_CONSOLE);
@@ -379,7 +397,7 @@ class FlxDefines
 					| "WARNING"
 					| "ERROR"
 					| "NONE":
-				
+
 				case unexpected:
 					abort('$userDefine must be: "NORMAL", "NOTICE", "WARNING", "ERROR" or "NONE", got "$unexpected"', (macro null).pos);
 			}
@@ -415,7 +433,7 @@ class FlxDefines
 	{
 		return Context.definedValue(Std.string(define));
 	}
-	
+
 	static inline function defined(define:Dynamic)
 	{
 		return Context.defined(Std.string(define));

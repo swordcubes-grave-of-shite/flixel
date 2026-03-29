@@ -5,7 +5,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.graphics.frames.FlxFrame;
-import flixel.graphics.tile.FlxDrawBaseItem;
+import flixel.system.render.quad.FlxDrawBaseItem;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -13,7 +13,7 @@ import flixel.text.FlxText.FlxTextAlign;
 import flixel.text.FlxText.FlxTextBorderStyle;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
-import openfl.display.BitmapData;
+import flixel.graphics.FlxBitmap;
 import openfl.geom.ColorTransform;
 
 using flixel.util.FlxColorTransformUtil;
@@ -214,7 +214,7 @@ class FlxBitmapText extends FlxSprite
 	/**
 	 * Helper bitmap buffer for text pixels but without any color transformations
 	 */
-	var textBitmap:BitmapData;
+	var textBitmap:FlxBitmap;
 
 	/**
 	 * Constructs a new text field component.
@@ -235,9 +235,9 @@ class FlxBitmapText extends FlxSprite
 
 		this.font = (font == null) ? FlxBitmapFont.getDefaultFont() : font;
 
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.method == BLITTING)
 		{
-			pixels = new BitmapData(1, 1, true, FlxColor.TRANSPARENT);
+			pixels = new FlxBitmap(1, 1, FlxColor.TRANSPARENT);
 		}
 		else
 		{
@@ -247,6 +247,11 @@ class FlxBitmapText extends FlxSprite
 		}
 		
 		this.text = text;
+
+		// initialize at runtime instead of statically to avoid a crash
+		// because FlxG.renderer(.method) is null
+		if (frameDrawHelper == null)
+			frameDrawHelper = new ReusableFrame();
 	}
 
 	/**
@@ -264,7 +269,7 @@ class FlxBitmapText extends FlxSprite
 
 		_colorParams = null;
 
-		if (FlxG.renderTile)
+		if (FlxG.renderer.method != BLITTING)
 		{
 			textData = null;
 			textDrawData = null;
@@ -278,13 +283,13 @@ class FlxBitmapText extends FlxSprite
 	 */
 	override public function drawFrame(Force:Bool = false):Void
 	{
-		if (FlxG.renderTile)
+		if (FlxG.renderer.method != BLITTING)
 		{
 			Force = true;
 		}
 		pendingTextBitmapChange = pendingTextBitmapChange || Force;
 		checkPendingChanges(false);
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.method == BLITTING)
 		{
 			super.drawFrame(Force);
 		}
@@ -298,7 +303,7 @@ class FlxBitmapText extends FlxSprite
 
 	function checkPendingChanges(useTiles:Bool = false):Void
 	{
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.method == BLITTING)
 		{
 			useTiles = false;
 		}
@@ -326,10 +331,10 @@ class FlxBitmapText extends FlxSprite
 	static final borderColorTransformDrawHelper = new ColorTransform();
 	static final textColorTransformDrawHelper = new ColorTransform();
 	static final matrixDrawHelper = new FlxMatrix();
-	static final frameDrawHelper = new ReusableFrame();
+	static var frameDrawHelper:Null<ReusableFrame>;
 	override function draw()
 	{
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.method == BLITTING)
 		{
 			checkPendingChanges(false);
 			super.draw();
@@ -400,11 +405,9 @@ class FlxBitmapText extends FlxSprite
 					matrix.translate(screenPos.x + originX, screenPos.y + originY);
 					final colorTransform = bgColorTransformDrawHelper.reset();
 					colorTransform.setMultipliers(colorHelper).scaleMultipliers(backgroundColor);
-					camera.drawPixels(FlxG.bitmap.whitePixel, null, matrix, colorTransform, blend, antialiasing);
+					camera.view.drawFrame(FlxG.bitmap.whitePixel, matrix, colorTransform, blend, antialiasing);
 				}
 				
-				final hasColorOffsets = (colorTransform != null && colorTransform.hasRGBAOffsets());
-				final drawItem = camera.startQuadBatch(font.parent, true, hasColorOffsets, blend, antialiasing, shader);
 				function addQuad(charCode:Int, x:Float, y:Float, color:ColorTransform)
 				{
 					var frame = font.getCharFrame(charCode);
@@ -425,12 +428,12 @@ class FlxBitmapText extends FlxSprite
 					}
 					
 					matrix.translate(screenPos.x + originX, screenPos.y + originY);
-					drawItem.addQuad(frame, matrix, color);
+					camera.view.drawFrame(frame, matrix, color, blend, antialiasing, shader);
 				}
 				
 				borderDrawData.forEach(addQuad.bind(_, _, _, borderColorTransform));
 				textDrawData.forEach(addQuad.bind(_, _, _, textColorTransform));
-				#if FLX_TRACK_PERFORMANCE
+				#if FLX_DEBUG
 				FlxBasic.visibleCount++;
 				#end
 			}
@@ -452,7 +455,7 @@ class FlxBitmapText extends FlxSprite
 	override function set_clipRect(Rect:FlxRect):FlxRect
 	{
 		super.set_clipRect(Rect);
-		if (!FlxG.renderBlit)
+		if (FlxG.renderer.method != BLITTING)
 		{
 			pendingTextBitmapChange = true;
 		}
@@ -462,7 +465,7 @@ class FlxBitmapText extends FlxSprite
 	override function set_color(Color:FlxColor):FlxColor
 	{
 		super.set_color(Color);
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.method == BLITTING)
 		{
 			pendingTextBitmapChange = true;
 		}
@@ -472,7 +475,7 @@ class FlxBitmapText extends FlxSprite
 	override function set_alpha(value:Float):Float
 	{
 		super.set_alpha(value);
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.method == BLITTING)
 		{
 			pendingTextBitmapChange = true;
 		}
@@ -484,7 +487,7 @@ class FlxBitmapText extends FlxSprite
 		if (textColor != value)
 		{
 			textColor = value;
-			if (FlxG.renderBlit)
+			if (FlxG.renderer.method == BLITTING)
 			{
 				pendingPixelsChange = true;
 			}
@@ -498,7 +501,7 @@ class FlxBitmapText extends FlxSprite
 		if (useTextColor != value)
 		{
 			useTextColor = value;
-			if (FlxG.renderBlit)
+			if (FlxG.renderer.method == BLITTING)
 			{
 				pendingPixelsChange = true;
 			}
@@ -509,7 +512,7 @@ class FlxBitmapText extends FlxSprite
 
 	override function calcFrame(RunOnCpp:Bool = false):Void
 	{
-		if (FlxG.renderTile)
+		if (FlxG.renderer.method != BLITTING)
 		{
 			drawFrame(RunOnCpp);
 		}
@@ -1001,7 +1004,7 @@ class FlxBitmapText extends FlxSprite
 	{
 		computeTextSize();
 
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.method == BLITTING)
 		{
 			useTiles = false;
 		}
@@ -1012,7 +1015,7 @@ class FlxBitmapText extends FlxSprite
 
 			if (textBitmap == null)
 			{
-				textBitmap = new BitmapData(frameWidth, frameHeight, true, FlxColor.TRANSPARENT);
+				textBitmap = new FlxBitmap(frameWidth, frameHeight, FlxColor.TRANSPARENT);
 			}
 			else
 			{
@@ -1021,7 +1024,7 @@ class FlxBitmapText extends FlxSprite
 
 			textBitmap.lock();
 		}
-		else if (FlxG.renderTile)
+		else if (FlxG.renderer.method != BLITTING)
 		{
 			textData.clear();
 		}
@@ -1069,7 +1072,7 @@ class FlxBitmapText extends FlxSprite
 
 	function drawLine(line:UnicodeString, posX:Int, posY:Int, useTiles:Bool = false):Void
 	{
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.method == BLITTING)
 		{
 			useTiles = false;
 		}
@@ -1099,7 +1102,7 @@ class FlxBitmapText extends FlxSprite
 
 	function tileLine(line:UnicodeString, startX:Int, startY:Int)
 	{
-		if (!FlxG.renderTile)
+		if (FlxG.renderer.method != DRAW_TILES)
 			return;
 		
 		addLineData(line, startX, startY, textData);
@@ -1170,17 +1173,17 @@ class FlxBitmapText extends FlxSprite
 		pendingPixelsChange = false;
 
 		var colorForFill:Int = background ? backgroundColor : FlxColor.TRANSPARENT;
-		var bitmap:BitmapData = null;
+		var bitmap:FlxBitmap = null;
 
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.method == BLITTING)
 		{
 			if (pixels == null || (frameWidth != pixels.width || frameHeight != pixels.height))
 			{
-				pixels = new BitmapData(frameWidth, frameHeight, true, colorForFill);
+				pixels = new FlxBitmap(frameWidth, frameHeight, colorForFill);
 			}
 			else
 			{
-				pixels.fillRect(graphic.bitmap.rect, colorForFill);
+				pixels.fillRect(graphic.texture.getBitmap().rect, colorForFill);
 			}
 
 			bitmap = pixels;
@@ -1192,7 +1195,7 @@ class FlxBitmapText extends FlxSprite
 				if (framePixels == null || (frameWidth != framePixels.width || frameHeight != framePixels.height))
 				{
 					framePixels = FlxDestroyUtil.dispose(framePixels);
-					framePixels = new BitmapData(frameWidth, frameHeight, true, colorForFill);
+					framePixels = new FlxBitmap(frameWidth, frameHeight, colorForFill);
 				}
 				else
 				{
@@ -1224,7 +1227,7 @@ class FlxBitmapText extends FlxSprite
 			bitmap.unlock();
 		}
 
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.method == BLITTING)
 		{
 			dirty = true;
 		}
@@ -1317,9 +1320,9 @@ class FlxBitmapText extends FlxSprite
 		centerOrigin();
 	}
 	
-	function drawText(posX:Int, posY:Int, isFront:Bool = true, ?bitmap:BitmapData, useTiles:Bool = false):Void
+	function drawText(posX:Int, posY:Int, isFront:Bool = true, ?bitmap:FlxBitmap, useTiles:Bool = false):Void
 	{
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.method == BLITTING)
 		{
 			useTiles = false;
 		}
@@ -1336,7 +1339,7 @@ class FlxBitmapText extends FlxSprite
 
 	// TODO: Make this a local statics when min haxe-ver is 4.3
 	static final matrixBlitHelper = new FlxMatrix();
-	function blitText(posX:Int, posY:Int, isFront:Bool = true, ?bitmap:BitmapData):Void
+	function blitText(posX:Int, posY:Int, isFront:Bool = true, ?bitmap:FlxBitmap):Void
 	{
 		var colorToApply = FlxColor.WHITE;
 
@@ -1366,7 +1369,7 @@ class FlxBitmapText extends FlxSprite
 	
 	function tileText(posX:Int, posY:Int, isFront:Bool = true):Void
 	{
-		if (!FlxG.renderTile)
+		if (FlxG.renderer.method != DRAW_TILES)
 			return;
 		
 		final data:CharList = isFront ? textDrawData : borderDrawData;
@@ -1553,7 +1556,7 @@ class FlxBitmapText extends FlxSprite
 		if (background != value)
 		{
 			background = value;
-			if (FlxG.renderBlit)
+			if (FlxG.renderer.method == BLITTING)
 			{
 				pendingPixelsChange = true;
 			}
@@ -1567,7 +1570,7 @@ class FlxBitmapText extends FlxSprite
 		if (backgroundColor != value)
 		{
 			backgroundColor = value;
-			if (FlxG.renderBlit)
+			if (FlxG.renderer.method == BLITTING)
 			{
 				pendingPixelsChange = true;
 			}
@@ -1592,7 +1595,7 @@ class FlxBitmapText extends FlxSprite
 		if (borderColor != value)
 		{
 			borderColor = value;
-			if (FlxG.renderBlit)
+			if (FlxG.renderer.method == BLITTING)
 			{
 				pendingPixelsChange = true;
 			}
@@ -1793,8 +1796,6 @@ private class ReusableFrame extends FlxFrame
 	public function new ()
 	{
 		super(null);
-		// We need to define this now, since it's created before renderTile is set
-		tileMatrix = new MatrixVector();
 	}
 	
 	override function destroy() {}

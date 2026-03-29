@@ -163,7 +163,7 @@ class FlxImageFrame extends FlxFramesCollection
 		var result:FlxGraphic = FlxG.bitmap.get(key);
 		if (result == null)
 		{
-			var bitmap:BitmapData = FlxBitmapDataUtil.addSpacesAndBorders(graphic.bitmap, null, null, border, region);
+			var bitmap:BitmapData = FlxBitmapDataUtil.addSpacesAndBorders(graphic.texture.getBitmap(), null, null, border, region);
 			result = FlxG.bitmap.add(bitmap, false, key);
 		}
 

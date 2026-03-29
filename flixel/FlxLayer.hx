@@ -70,7 +70,10 @@ class FlxLayer extends FlxBasic
 		for(i in 0..._pendingDraw)
 		{
 			final drawData:PendingDraw = _cachedDraws[i];
-			drawData.camera.drawPixels(drawData.frame, drawData.pixels, drawData.matrix, drawData.transform, drawData.blend, drawData.smoothing, drawData.shader);
+			if(drawData.pixels != null)
+				drawData.camera.view.drawPixels(drawData.pixels, drawData.matrix, drawData.transform, drawData.blend, drawData.smoothing, drawData.shader);
+			else
+				drawData.camera.view.drawFrame(drawData.frame, drawData.matrix, drawData.transform, drawData.blend, drawData.smoothing, drawData.shader);
 		}
 	}
 }

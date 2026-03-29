@@ -18,6 +18,7 @@ import flixel.system.frontEnds.SignalFrontEnd;
 import flixel.system.frontEnds.SoundFrontEnd;
 import flixel.system.frontEnds.VCRFrontEnd;
 import flixel.system.frontEnds.WatchFrontEnd;
+import flixel.system.render.FlxRenderer;
 import flixel.system.scaleModes.BaseScaleMode;
 import flixel.system.scaleModes.RatioScaleMode;
 import flixel.util.FlxCollision;
@@ -79,7 +80,7 @@ class FlxG
 	 * How fast or slow time should pass in the game; default is `1.0`.
 	 */
 	public static var timeScale:Float = 1.0;
-	
+
 	/**
 	 * How fast or slow animations should pass in the game; default is `1.0`.
 	 * @since 5.5.0
@@ -146,17 +147,40 @@ class FlxG
 	 */
 	public static var onMobile(get, never):Bool;
 
-	public static var renderMethod(default, null):FlxRenderMethod;
+	@:deprecated("renderMethod is deprecated, use FlxG.renderer.method, instead.")
+	public static var renderMethod(get, null):flixel.system.render.FlxRenderer.FlxRenderMethod;
+	@:noCompletion static inline function get_renderMethod():flixel.system.render.FlxRenderer.FlxRenderMethod
+	{
+		return renderer.method;
+	}
 
-	public static var renderBlit(default, null):Bool;
-	public static var renderTile(default, null):Bool;
+	@:deprecated("renderBlit is deprecated, compare against FlxG.renderer.blit, instead.")
+	public static var renderBlit(get, never):Bool;
+	@:noCompletion static inline function get_renderBlit():Bool
+	{
+		return renderer.blit;
+	}
+
+	@:deprecated("renderTile is deprecated, compare against FlxG.renderer.tile, instead.")
+	public static var renderTile(get, never):Bool;
+	@:noCompletion static inline function get_renderTile():Bool
+	{
+		return renderer.tile;
+	}
+
+	/**
+	 * The global renderer instance.
+	 *
+	 * @see `FlxRenderer`
+	 */
+	public static var renderer(default, null):FlxRenderer;
 
 	/**
 	 * Whether or not antialiasing is allowed.
-	 * 
+	 *
 	 * If this is disabled, sprites or cameras will not have
 	 * any antialiasing, regardless of their individual antialiasing values.
-	 * 
+	 *
 	 * This could come in handy for an antialiasing option in your game!
 	 */
 	public static var allowAntialiasing:Bool = true;
@@ -356,7 +380,7 @@ class FlxG
 	 * @since 5.9.0
 	 */
 	public static var assets(default, null):AssetFrontEnd = new AssetFrontEnd();
-	
+
 	/**
 	 * Resizes the game within the window by reapplying the current scale mode.
 	 */
@@ -555,16 +579,12 @@ class FlxG
 			width = -width;
 		if (height < 0)
 			height = -height;
-		
+
 		FlxG.game = game;
 		FlxG.width = width;
 		FlxG.height = height;
 
 		initRenderMethod();
-		#if FLX_OPENGL_AVAILABLE
-		// Query once when window is created and cache for later
-		bitmap.get_maxTextureSize();
-		#end
 
 		FlxG.initialWidth = width;
 		FlxG.initialHeight = height;
@@ -614,28 +634,8 @@ class FlxG
 
 	static function initRenderMethod():Void
 	{
-		#if !flash
-		renderMethod = switch (stage.window.context.type)
-		{
-			case OPENGL, OPENGLES, WEBGL: DRAW_TILES;
-			default: BLITTING;
-		}
-		#else
-		#if web
-		renderMethod = BLITTING;
-		#else
-		renderMethod = DRAW_TILES;
-		#end
-		#end
-
-		#if air
-		renderMethod = BLITTING;
-		#end
-
-		renderBlit = renderMethod == BLITTING;
-		renderTile = renderMethod == DRAW_TILES;
-
-		FlxObject.defaultPixelPerfectPosition = renderBlit;
+		renderer = FlxRenderer.create();
+		renderer.initGlobals();
 	}
 
 	#if FLX_SAVE
@@ -693,7 +693,7 @@ class FlxG
 			mouse = inputs.addUniqueType(newMouse);
 			return mouse;
 		}
-		
+
 		// replace existing mouse
 		final oldMouse:FlxMouse = mouse;
 		final result:FlxMouse = inputs.replace(oldMouse, newMouse, true);
@@ -702,7 +702,7 @@ class FlxG
 			mouse = result;
 			return newMouse;
 		}
-		
+
 		return oldMouse;
 	}
 	#end
@@ -772,10 +772,4 @@ class FlxG
 			false
 		#end;
 	}
-}
-
-enum FlxRenderMethod
-{
-	DRAW_TILES;
-	BLITTING;
 }

@@ -10,11 +10,11 @@ import flixel.math.FlxRect;
 import flixel.system.FlxAssets;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
-import openfl.display.BitmapData;
+import flixel.graphics.FlxBitmap;
 
 /**
- * `BitmapData` wrapper which is used for rendering.
- * It stores info about all frames, generated for specific `BitmapData` object.
+ * `FlxBitmap` wrapper which is used for rendering.
+ * It stores info about all frames, generated for specific `FlxBitmap` object.
  */
 class FlxGraphic implements IFlxDestroyable
 {
@@ -28,15 +28,15 @@ class FlxGraphic implements IFlxDestroyable
 	 * Creates and caches FlxGraphic object from openfl.Assets key string.
 	 *
 	 * @param   Source   `openfl.Assets` key string. For example: `"assets/image.png"`.
-	 * @param   Unique   Ensures that the `BitmapData` uses a new slot in the cache.
-	 *                   If `true`, then `BitmapData` for this `FlxGraphic` will be cloned, which means extra memory.
+	 * @param   Unique   Ensures that the `FlxBitmap` uses a new slot in the cache.
+	 *                   If `true`, then `FlxBitmap` for this `FlxGraphic` will be cloned, which means extra memory.
 	 * @param   Key      Force the cache to use a specific key to index the bitmap.
 	 * @param   Cache    Whether to use graphic caching or not. Default value is `true`, which means automatic caching.
 	 * @return  Cached `FlxGraphic` object we just created.
 	 */
 	public static function fromAssetKey(Source:String, Unique:Bool = false, ?Key:String, Cache:Bool = true):FlxGraphic
 	{
-		var bitmap:BitmapData = null;
+		var bitmap:FlxBitmap = null;
 
 		if (!Cache)
 		{
@@ -61,18 +61,18 @@ class FlxGraphic implements IFlxDestroyable
 	}
 
 	/**
-	 * Creates and caches `FlxGraphic` object from a specified `Class<BitmapData>`.
+	 * Creates and caches `FlxGraphic` object from a specified `Class<FlxBitmap>`.
 	 *
-	 * @param   Source   `Class<BitmapData>` to create `BitmapData` for `FlxGraphic` from.
-	 * @param   Unique   Ensures that the `BitmapData` uses a new slot in the cache.
-	 *                   If `true`, then `BitmapData` for this `FlxGraphic` will be cloned, which means extra memory.
+	 * @param   Source   `Class<FlxBitmap>` to create `FlxBitmap` for `FlxGraphic` from.
+	 * @param   Unique   Ensures that the `FlxBitmap` uses a new slot in the cache.
+	 *                   If `true`, then `FlxBitmap` for this `FlxGraphic` will be cloned, which means extra memory.
 	 * @param   Key      Force the cache to use a specific key to index the bitmap.
 	 * @param   Cache    Whether to use graphic caching or not. Default value is `true`, which means automatic caching.
 	 * @return  `FlxGraphic` object we just created.
 	 */
-	public static function fromClass(Source:Class<BitmapData>, Unique:Bool = false, ?Key:String, Cache:Bool = true):FlxGraphic
+	public static function fromClass(Source:Class<FlxBitmap>, Unique:Bool = false, ?Key:String, Cache:Bool = true):FlxGraphic
 	{
-		var bitmap:BitmapData = null;
+		var bitmap:FlxBitmap = null;
 		if (!Cache)
 		{
 			bitmap = FlxAssets.getBitmapFromClass(Source);
@@ -92,16 +92,16 @@ class FlxGraphic implements IFlxDestroyable
 	}
 
 	/**
-	 * Creates and caches `FlxGraphic` object from specified `BitmapData` object.
+	 * Creates and caches `FlxGraphic` object from specified `FlxBitmap` object.
 	 *
-	 * @param   Source   `BitmapData` for `FlxGraphic` to use.
-	 * @param   Unique   Ensures that the `BitmapData` uses a new slot in the cache.
-	 *                   If `true`, then `BitmapData` for this `FlxGraphic` will be cloned, which means extra memory.
+	 * @param   Source   `FlxBitmap` for `FlxGraphic` to use.
+	 * @param   Unique   Ensures that the `FlxBitmap` uses a new slot in the cache.
+	 *                   If `true`, then `FlxBitmap` for this `FlxGraphic` will be cloned, which means extra memory.
 	 * @param   Key      Force the cache to use a specific key to index the bitmap.
 	 * @param   Cache    Whether to use graphic caching or not. Default value is `true`, which means automatic caching.
 	 * @return  `FlxGraphic` object we just created.
 	 */
-	public static function fromBitmapData(Source:BitmapData, Unique:Bool = false, ?Key:String, Cache:Bool = true):FlxGraphic
+	public static function fromBitmapData(Source:FlxBitmap, Unique:Bool = false, ?Key:String, Cache:Bool = true):FlxGraphic
 	{
 		if (!Cache)
 			return createGraphic(Source, Key, Unique, Cache);
@@ -109,7 +109,7 @@ class FlxGraphic implements IFlxDestroyable
 		var key:String = FlxG.bitmap.findKeyForBitmap(Source);
 
 		var assetKey:String = null;
-		var assetClass:Class<BitmapData> = null;
+		var assetClass:Class<FlxBitmap> = null;
 		var graphic:FlxGraphic = null;
 		if (key != null)
 		{
@@ -131,11 +131,11 @@ class FlxGraphic implements IFlxDestroyable
 
 	/**
 	 * Creates and (optionally) caches a `FlxGraphic` object from the specified `FlxFrame`.
-	 * It uses frame's `BitmapData`, not the `frame.parent.bitmap`.
+	 * It uses frame's `FlxBitmap`, not the `frame.parent.bitmap`.
 	 *
-	 * @param   Source   `FlxFrame` to get the `BitmapData` from.
+	 * @param   Source   `FlxFrame` to get the `FlxBitmap` from.
 	 * @param   Unique   Ensures that the bitmap data uses a new slot in the cache.
-	 *                   If `true`, then `BitmapData` for this `FlxGraphic` will be cloned, which means extra memory.
+	 *                   If `true`, then `FlxBitmap` for this `FlxGraphic` will be cloned, which means extra memory.
 	 * @param   Key      Force the cache to use a specific key to index the bitmap.
 	 * @param   Cache    Whether to use graphic caching or not. Default value is `true`, which means automatic caching.
 	 * @return  `FlxGraphic` object we just created.
@@ -151,7 +151,7 @@ class FlxGraphic implements IFlxDestroyable
 		if (graphic != null)
 			return graphic;
 
-		var bitmap:BitmapData = Source.paint();
+		var bitmap:FlxBitmap = Source.paint();
 		graphic = createGraphic(bitmap, key, Unique, Cache);
 		var image:FlxImageFrame = FlxImageFrame.fromGraphic(graphic);
 		image.getByIndex(0).name = Source.name;
@@ -160,12 +160,12 @@ class FlxGraphic implements IFlxDestroyable
 
 	/**
 	 * Creates and caches a FlxGraphic object from the specified `FlxFramesCollection`.
-	 * It uses `frames.parent.bitmap` as a source for the `FlxGraphic`'s `BitmapData`.
+	 * It uses `frames.parent.bitmap` as a source for the `FlxGraphic`'s `FlxBitmap`.
 	 * It also copies all the frames collections onto the newly created `FlxGraphic`.
 	 *
-	 * @param   Source   `FlxFramesCollection` to get the `BitmapData` from.
-	 * @param   Unique   Ensures that the `BitmapData` uses a new slot in the cache.
-	 *                   If `true`, then `BitmapData` for this `FlxGraphic` will be cloned, which means extra memory.
+	 * @param   Source   `FlxFramesCollection` to get the `FlxBitmap` from.
+	 * @param   Unique   Ensures that the `FlxBitmap` uses a new slot in the cache.
+	 *                   If `true`, then `FlxBitmap` for this `FlxGraphic` will be cloned, which means extra memory.
 	 * @param   Key      Force the cache to use a specific key to index the bitmap.
 	 * @return  Cached `FlxGraphic` object we just created.
 	 */
@@ -178,9 +178,9 @@ class FlxGraphic implements IFlxDestroyable
 	 * Creates and caches a `FlxGraphic` object from the specified `FlxGraphic` object.
 	 * It copies all the frame collections onto the newly created `FlxGraphic`.
 	 *
-	 * @param   Source   `FlxGraphic` to get the `BitmapData` from.
-	 * @param   Unique   Ensures that the `BitmapData` uses a new slot in the cache.
-	 *                   If `true`, then `BitmapData` for this `FlxGraphic` will be cloned, which means extra memory.
+	 * @param   Source   `FlxGraphic` to get the `FlxBitmap` from.
+	 * @param   Unique   Ensures that the `FlxBitmap` uses a new slot in the cache.
+	 *                   If `true`, then `FlxBitmap` for this `FlxGraphic` will be cloned, which means extra memory.
 	 * @param   Key      Force the cache to use a specific key to index the bitmap.
 	 * @return  Cached `FlxGraphic` object we just created.
 	 */
@@ -190,7 +190,7 @@ class FlxGraphic implements IFlxDestroyable
 			return Source;
 
 		var key:String = FlxG.bitmap.generateKey(Source.key, Key, Unique);
-		var graphic:FlxGraphic = createGraphic(Source.bitmap, key, Unique);
+		var graphic:FlxGraphic = createGraphic(Source.texture.getBitmap(), key, Unique);
 		graphic.unique = Unique;
 		graphic.assetsClass = Source.assetsClass;
 		graphic.assetsKey = Source.assetsKey;
@@ -203,7 +203,7 @@ class FlxGraphic implements IFlxDestroyable
 	 * @param   Width    How wide the rectangle should be.
 	 * @param   Height   How high the rectangle should be.
 	 * @param   Color    What color the rectangle should have (`0xAARRGGBB`).
-	 * @param   Unique   Ensures that the `BitmapData` uses a new slot in the cache.
+	 * @param   Unique   Ensures that the `FlxBitmap` uses a new slot in the cache.
 	 * @param   Key      Force the cache to use a specific key to index the bitmap.
 	 * @return  The `FlxGraphic` object we just created.
 	 */
@@ -216,46 +216,47 @@ class FlxGraphic implements IFlxDestroyable
 		if (graphic != null)
 			return graphic;
 
-		var bitmap = new BitmapData(Width, Height, true, Color);
+		var bitmap = new FlxBitmap(Width, Height, Color);
 		return createGraphic(bitmap, key);
 	}
 
 	/**
-	 * Helper method for cloning specified `BitmapData` if necessary.
+	 * Helper method for cloning specified `FlxBitmap` if necessary.
 	 *
-	 * @param   Bitmap   `BitmapData` to process
-	 * @param   Unique   Whether we need to clone specified `BitmapData` object or not
-	 * @return  Processed `BitmapData`
+	 * @param   Bitmap   `FlxBitmap` to process
+	 * @param   Unique   Whether we need to clone specified `FlxBitmap` object or not
+	 * @return  Processed `FlxBitmap`
 	 */
-	static inline function getBitmap(Bitmap:BitmapData, Unique:Bool = false):BitmapData
+	static inline function getBitmap(Bitmap:FlxBitmap, Unique:Bool = false):FlxBitmap
 	{
 		return Unique ? Bitmap.clone() : Bitmap;
 	}
 
 	/**
-	 * Creates and caches the specified `BitmapData` object.
+	 * Creates and caches the specified `FlxBitmap` object.
 	 *
-	 * @param   Bitmap   `BitmapData` to use as a graphic source for the new `FlxGraphic`.
-	 * @param   Key      Key to use as a cache key for the created `FlxGraphic`.
-	 * @param   Unique   Whether the new `FlxGraphic` object uses a unique `BitmapData` or not.
-	 *                   If `true`, the specified `BitmapData` will be cloned.
-	 * @param   Cache    Whether to use graphic caching or not. Default value is `true`, which means automatic caching.
+	 * @param   bitmap   `FlxBitmap` to use as a graphic source for the new `FlxGraphic`.
+	 * @param   key      Key to use as a cache key for the created `FlxGraphic`.
+	 * @param   unique   Whether the new `FlxGraphic` object uses a unique `FlxBitmap` or not.
+	 *                   If `true`, the specified `FlxBitmap` will be cloned.
+	 * @param   cache    Whether to use graphic caching or not. Default value is `true`, which means automatic caching.
 	 * @return  Created `FlxGraphic` object.
 	 */
-	static function createGraphic(Bitmap:BitmapData, Key:String, Unique:Bool = false, Cache:Bool = true):FlxGraphic
+	static function createGraphic(bitmap:FlxBitmap, key:String, unique:Bool = false, cache:Bool = true):FlxGraphic
 	{
-		Bitmap = FlxGraphic.getBitmap(Bitmap, Unique);
+		bitmap = FlxGraphic.getBitmap(bitmap, unique);
+		var texture = FlxTexture.fromBitmap(bitmap);
 		var graphic:FlxGraphic = null;
 
-		if (Cache)
+		if (cache)
 		{
-			graphic = new FlxGraphic(Key, Bitmap);
-			graphic.unique = Unique;
+			graphic = new FlxGraphic(key, texture);
+			graphic.unique = unique;
 			FlxG.bitmap.addGraphic(graphic);
 		}
 		else
 		{
-			graphic = new FlxGraphic(null, Bitmap);
+			graphic = new FlxGraphic(null, texture);
 		}
 
 		return graphic;
@@ -267,17 +268,23 @@ class FlxGraphic implements IFlxDestroyable
 	public var key(default, null):String;
 
 	/**
-	 * The cached `BitmapData` object.
+	 * The cached `FlxBitmap` object.
 	 */
-	public var bitmap(default, set):BitmapData;
+	@:deprecated("graphic.bitmap is deprecated, use graphic.texture.getBitmap() instead.")
+	public var bitmap(get, set):FlxBitmap;
 
 	/**
-	 * Width of the cached `BitmapData`.
+	 * The cached `FlxTexture` object.
+	 */
+	public var texture(default, set):FlxTexture;
+
+	/**
+	 * Width of the cached `FlxBitmap`.
 	 */
 	public var width(default, null):Int = 0;
 
 	/**
-	 * Height of the cached `BitmapData`.
+	 * Height of the cached `FlxBitmap`.
 	 */
 	public var height(default, null):Int = 0;
 
@@ -287,9 +294,9 @@ class FlxGraphic implements IFlxDestroyable
 	public var assetsKey(default, null):String;
 
 	/**
-	 * Class name for the `BitmapData`.
+	 * Class name for the `FlxBitmap`.
 	 */
-	public var assetsClass(default, null):Class<BitmapData>;
+	public var assetsClass(default, null):Class<FlxBitmap>;
 
 	/**
 	 * Whether this graphic object should stay in the cache after state changes or not.
@@ -304,7 +311,7 @@ class FlxGraphic implements IFlxDestroyable
 	public var destroyOnNoUse(default, set):Bool = true;
 
 	/**
-	 * Whether the `BitmapData` of this graphic object has been loaded or not.
+	 * Whether the `FlxBitmap` of this graphic object has been loaded or not.
 	 */
 	public var isLoaded(get, never):Bool;
 
@@ -315,7 +322,7 @@ class FlxGraphic implements IFlxDestroyable
 	public var isDestroyed(get, never):Bool;
 
 	/**
-	 * Whether the `BitmapData` of this graphic object can be refreshed.
+	 * Whether the `FlxBitmap` of this graphic object can be refreshed.
 	 * This is only the case for graphics with an `assetsKey` or `assetsClass`.
 	 */
 	public var canBeRefreshed(get, never):Bool;
@@ -360,7 +367,7 @@ class FlxGraphic implements IFlxDestroyable
 	/**
 	 * Shows whether this object unique in cache or not.
 	 *
-	 * Whether undumped `BitmapData` should be cloned or not.
+	 * Whether undumped `FlxBitmap` should be cloned or not.
 	 * It is `false` by default, since it significantly increases memory consumption.
 	 */
 	public var unique:Bool = false;
@@ -395,29 +402,32 @@ class FlxGraphic implements IFlxDestroyable
 	/**
 	 * `FlxGraphic` constructor
 	 *
-	 * @param   Key       Key string for this graphic object, with which you can get it from bitmap cache.
-	 * @param   Bitmap    `BitmapData` for this graphic object.
-	 * @param   Persist   Whether or not this graphic stay in the cache after resetting it.
+	 * @param   key       Key string for this graphic object, with which you can get it from bitmap cache.
+	 * @param   texture   `FlxTexture` for this graphic object.
+	 * @param   persist   Whether or not this graphic stay in the cache after resetting it.
 	 *                    Default value is `false`, which means that this graphic will be destroyed at the cache reset.
 	 */
-	function new(key:String, bitmap:BitmapData, ?persist:Bool)
+	function new(key:String, texture:FlxTexture, ?persist:Bool)
 	{
 		this.key = key;
 		this.persist = (persist != null) ? persist : defaultPersist;
 
 		frameCollections = new Map<FlxFrameCollectionType, Array<Dynamic>>();
 		frameCollectionTypes = new Array<FlxFrameCollectionType>();
-		this.bitmap = bitmap;
+		this.texture = texture;
+
+		@:privateAccess texture._graphic = this;
 
 		shader = new FlxShader();
 	}
 
 	/**
-	 * Refreshes the `BitmapData` of this graphic.
+	 * Refreshes the `FlxBitmap` of this graphic.
 	 */
+	@:haxe.warning("-WDeprecated")
 	public function refresh():Void
 	{
-		var newBitmap:BitmapData = getBitmapFromSystem();
+		var newBitmap:FlxBitmap = getBitmapFromSystem();
 		if (newBitmap != null)
 			bitmap = newBitmap;
 	}
@@ -445,7 +455,7 @@ class FlxGraphic implements IFlxDestroyable
 	 */
 	public function destroy():Void
 	{
-		bitmap = FlxDestroyUtil.dispose(bitmap);
+		texture = FlxDestroyUtil.destroy(texture);
 
 		shader = null;
 
@@ -523,12 +533,12 @@ class FlxGraphic implements IFlxDestroyable
 	}
 
 	/**
-	 * Gets the `BitmapData` for this graphic object from OpenFL.
+	 * Gets the `FlxBitmap` for this graphic object from OpenFL.
 	 * This method is used for refreshing bitmaps.
 	 */
-	function getBitmapFromSystem():BitmapData
+	function getBitmapFromSystem():FlxBitmap
 	{
-		var newBitmap:BitmapData = null;
+		var newBitmap:FlxBitmap = null;
 		if (assetsClass != null)
 			newBitmap = FlxAssets.getBitmapFromClass(assetsClass);
 		else if (assetsKey != null)
@@ -542,6 +552,7 @@ class FlxGraphic implements IFlxDestroyable
 
 	inline function get_isLoaded()
 	{
+		final bitmap = texture.getBitmap();
 		return bitmap != null && !bitmap.rect.isEmpty();
 	}
 
@@ -574,7 +585,7 @@ class FlxGraphic implements IFlxDestroyable
 
 	function checkUseCount()
 	{
-		if (FlxG.bitmap.autoClearCache && useCount <= 0 && destroyOnNoUse && !persist)
+		if (useCount <= 0 && destroyOnNoUse && !persist)
 			FlxG.bitmap.remove(this);
 	}
 
@@ -600,22 +611,26 @@ class FlxGraphic implements IFlxDestroyable
 		return FlxAtlasFrames.findFrame(this, null);
 	}
 
-	function set_bitmap(value:BitmapData):BitmapData
+	inline function get_bitmap():FlxBitmap
+	{
+		return texture.getBitmap();
+	}
+
+	function set_bitmap(value:FlxBitmap):FlxBitmap
+	{
+		if (value != null)
+			texture = FlxTexture.fromBitmap(value);
+
+		return value;
+	}
+
+	function set_texture(value:FlxTexture):FlxTexture
 	{
 		if (value != null)
 		{
-			bitmap = value;
-			width = bitmap.width;
-			height = bitmap.height;
-
-			#if FLX_OPENGL_AVAILABLE
-			var max:Int = FlxG.bitmap.maxTextureSize;
-			if (max > 0)
-			{
-				if (width > max || height > max)
-					FlxG.log.warn('Graphic dimensions (${width}x${height}) exceed the maximum allowed size (${max}x${max}), which may cause rendering issues.');
-			}
-			#end
+			texture = value;
+			width = value.width;
+			height = value.height;
 		}
 
 		return value;

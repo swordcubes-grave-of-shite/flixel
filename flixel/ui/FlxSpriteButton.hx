@@ -50,7 +50,7 @@ class FlxSpriteButton extends FlxTypedButton<FlxSprite> implements IFlxInput
 			text.setFormat(font, size, color, align);
 			text.alpha = labelAlphas[status];
 			text.drawFrame(true);
-			var labelBitmap:BitmapData = text.graphic.bitmap.clone();
+			var labelBitmap:BitmapData = text.graphic.texture.getBitmap().clone();
 			var labelKey:String = text.graphic.key;
 			text.destroy();
 

@@ -20,7 +20,7 @@ class CameraFrontEnd
 	 * Do not edit directly, use `add` and `remove` instead.
 	 */
 	public var list(default, null):Array<FlxCamera> = [];
-	
+
 	/**
 	 * Array listing all cameras marked as default draw targets, `FlxBasics` with no
 	 *`cameras` set will render to them.
@@ -58,32 +58,32 @@ class CameraFrontEnd
 	 * @see flixel.FlxBasic.cameras
 	 *
 	 * @param	NewCamera         The camera you want to add.
-	 * @param	DefaultDrawTarget Whether to add the camera to the list of default draw targets. If false, 
+	 * @param	DefaultDrawTarget Whether to add the camera to the list of default draw targets. If false,
 	 *                            `FlxBasics` will not render to it unless you add it to their `cameras` list.
 	 * @return	This FlxCamera instance.
 	 */
 	public function add<T:FlxCamera>(NewCamera:T, DefaultDrawTarget:Bool = true):T
 	{
 		FlxG.game.addChildAt(NewCamera.flashSprite, FlxG.game.getChildIndex(FlxG.game._inputContainer));
-		
+
 		list.push(NewCamera);
 		if (DefaultDrawTarget)
 			defaults.push(NewCamera);
-		
+
 		NewCamera.ID = list.length - 1;
 		cameraAdded.dispatch(NewCamera);
 		return NewCamera;
 	}
-	
+
 	/**
 	 * Inserts a new camera object to the game.
-	 * 
+	 *
 	 * - If `position` is negative, `list.length + position` is used
 	 * - If `position` exceeds `list.length`, the camera is added to the end.
 	 *
 	 * @param	newCamera         The camera you want to add.
 	 * @param	position          The position in the list where you want to insert the camera
-	 * @param	defaultDrawTarget Whether to add the camera to the list of default draw targets. If false, 
+	 * @param	defaultDrawTarget Whether to add the camera to the list of default draw targets. If false,
 	 *                            `FlxBasics` will not render to it unless you add it to their `cameras` list.
 	 * @return	This FlxCamera instance.
 	 */
@@ -92,21 +92,21 @@ class CameraFrontEnd
 	    // negative numbers are relative to the length (match Array.insert's behavior)
 	    if (position < 0)
 	        position += list.length;
-	    
+
 	    // invalid ranges are added (match Array.insert's behavior)
         if (position >= list.length)
             return add(newCamera);
-        
+
         final childIndex = FlxG.game.getChildIndex(list[position].flashSprite);
         FlxG.game.addChildAt(newCamera.flashSprite, childIndex);
-		
+
 		list.insert(position, newCamera);
 		if (defaultDrawTarget)
 			defaults.push(newCamera);
-		
+
 		for (i in position...list.length)
 			list[i].ID = i;
-		
+
 		cameraAdded.dispatch(newCamera);
 		return newCamera;
 	}
@@ -132,7 +132,7 @@ class CameraFrontEnd
 			return;
 		}
 
-		if (FlxG.renderTile)
+		if (FlxG.renderer.tile)
 		{
 			for (i in 0...list.length)
 			{
@@ -145,12 +145,12 @@ class CameraFrontEnd
 
 		cameraRemoved.dispatch(Camera);
 	}
-	
+
 	/**
 	 * If set to true, the camera is listed as a default draw target, meaning `FlxBasics`
 	 * render to the specified camera if the `FlxBasic` has a null `cameras` value.
 	 * @see flixel.FlxBasic.cameras
-	 * 
+	 *
 	 * @param camera The camera you wish to change.
 	 * @param value  If false, FlxBasics will not render to it unless you add it to their `cameras` list.
 	 * @since 4.9.0
@@ -162,9 +162,9 @@ class CameraFrontEnd
 			FlxG.log.warn("FlxG.cameras.setDefaultDrawTarget(): The specified camera is not a part of the game.");
 			return;
 		}
-		
+
 		var index = defaults.indexOf(camera);
-		
+
 		if (value && index == -1)
 			defaults.push(camera);
 		else if (!value)
@@ -180,7 +180,7 @@ class CameraFrontEnd
 	public function reset(?NewCamera:FlxCamera):Void
 	{
 		FlxG.camera = null;
-		
+
 		while (list.length > 0)
 			remove(list[0]);
 
@@ -253,87 +253,46 @@ class CameraFrontEnd
 	 * Called by the game object to lock all the camera buffers and clear them for the next draw pass.
 	 */
 	@:allow(flixel.FlxGame)
+	@:deprecated("lock() is deprecated, use clear() instead.")
 	inline function lock():Void
+	{
+		clear();
+	}
+
+	/**
+	 * Called by the game object to clear all the camera buffers for the next draw pass.
+	 */
+	@:allow(flixel.FlxGame)
+	inline function clear():Void
 	{
 		for (camera in list)
 		{
-			if (camera == null || !camera.exists || !camera.visible)
-			{
-				continue;
-			}
-
-			if (FlxG.renderBlit)
-			{
-				camera.checkResize();
-
-				if (useBufferLocking)
-				{
-					camera.buffer.lock();
-				}
-			}
-
-			if (FlxG.renderTile)
-			{
-				camera.clearDrawStack();
-				camera.canvas.graphics.clear();
-				// Clearing camera's debug sprite
-				#if FLX_DEBUG
-				camera.debugLayer.graphics.clear();
-				#end
-			}
-
-			if (FlxG.renderBlit)
-			{
-				camera.fill(camera.bgColor, camera.useBgAlphaBlending);
-				camera.screen.dirty = true;
-			}
-			else
-			{
-				camera.fill(camera.bgColor.rgb, camera.useBgAlphaBlending, camera.bgColor.alphaFloat);
-			}
-		}
-	}
-
-	@:allow(flixel.FlxGame)
-	inline function render():Void
-	{
-		if (FlxG.renderTile)
-		{
-			for (camera in list)
-			{
-				if ((camera != null) && camera.exists && camera.visible)
-				{
-					camera.render();
-				}
-			}
+			if ((camera != null) && camera.exists && camera.visible)
+				camera.view.clear();
 		}
 	}
 
 	/**
-	 * Called by the game object to draw the special FX and unlock all the camera buffers.
+	 * Called by the game object to draw everything onto the screen.
 	 */
 	@:allow(flixel.FlxGame)
-	inline function unlock():Void
+	inline function render():Void
 	{
 		for (camera in list)
 		{
-			if ((camera == null) || !camera.exists || !camera.visible)
-			{
-				continue;
-			}
-
-			camera.drawFX();
-
-			if (FlxG.renderBlit)
-			{
-				if (useBufferLocking)
-				{
-					camera.buffer.unlock();
-				}
-
-				camera.screen.dirty = true;
-			}
+			if ((camera != null) && camera.exists && camera.visible)
+				camera.view.render();
 		}
+	}
+
+	/**
+	 * Called by the game object to draw everything onto the screen.
+	 */
+	@:allow(flixel.FlxGame)
+	@:deprecated("unlock() is deprecated, use render() instead.")
+	inline function unlock():Void
+	{
+		render();
 	}
 
 	/**

@@ -4,16 +4,20 @@ import flixel.FlxG;
 import flixel.input.keyboard.FlxKey;
 import flixel.system.debug.FlxDebugger;
 import flixel.system.debug.Window;
-import flixel.system.debug.interaction.Interaction;
-import flixel.system.debug.interaction.tools.Tool;
-import flixel.system.debug.watch.Tracker;
+import flixel.system.debug.watch.TrackerProfile;
 import flixel.system.ui.FlxSystemButton;
 import flixel.util.FlxHorizontalAlign;
 import flixel.util.FlxSignal;
-import openfl.display.BitmapData;
+import flixel.graphics.FlxBitmap;
 
 using flixel.util.FlxArrayUtil;
 using flixel.util.FlxStringUtil;
+
+#if FLX_DEBUG
+import flixel.system.debug.interaction.Interaction;
+import flixel.system.debug.interaction.tools.Tool;
+import flixel.system.debug.watch.Tracker;
+#end
 
 /**
  * Accessed via `FlxG.debugger`.
@@ -50,15 +54,15 @@ class DebuggerFrontEnd
 	public var visibilityChanged(default, null):FlxSignal = new FlxSignal();
 
 	public var visible(default, set):Bool = false;
-	
+
 	#if FLX_DEBUG
 	/** Helper for adding and removing debug tools */
 	public var tools:DebugToolsFrontEnd;
-	
+
 	/** Helper for adding and removing debug windows */
 	public var windows:DebugWindowsFrontEnd;
 	#end
-	
+
 	@:allow(flixel.FlxG)
 	function new()
 	{
@@ -67,7 +71,7 @@ class DebuggerFrontEnd
 		windows = new DebugWindowsFrontEnd();
 		#end
 	}
-	
+
 	/**
 	 * Change the way the debugger's windows are laid out.
 	 *
@@ -100,7 +104,7 @@ class DebuggerFrontEnd
 	 * @param   UpdateLayout   Whether to update the button layout.
 	 * @return  The added button.
 	 */
-	public function addButton(Alignment:FlxHorizontalAlign, Icon:BitmapData, UpHandler:Void->Void, ToggleMode:Bool = false,
+	public function addButton(Alignment:FlxHorizontalAlign, Icon:FlxBitmap, UpHandler:Void->Void, ToggleMode:Bool = false,
 			UpdateLayout:Bool = true):FlxSystemButton
 	{
 		#if FLX_DEBUG
@@ -159,7 +163,7 @@ class DebuggerFrontEnd
 		FlxG.game.debugger.removeButton(Button, UpdateLayout);
 		#end
 	}
-	
+
 	function set_drawDebug(Value:Bool):Bool
 	{
 		if (drawDebug == Value)
@@ -196,17 +200,17 @@ class DebugToolsFrontEnd
 {
 	public var activeTool(get, never):Tool;
 	inline function get_activeTool() return interaction.activeTool;
-	
+
 	var interaction(get, never):Interaction;
 	inline function get_interaction() return FlxG.game.debugger.interaction;
-	
+
 	function new() {}
-	
+
 	public function add(tool)
 	{
 		interaction.addTool(tool);
 	}
-	
+
 	public function remove(tool)
 	{
 		interaction.removeTool(tool);
@@ -218,15 +222,15 @@ class DebugWindowsFrontEnd
 {
 	var debugger(get, never):FlxDebugger;
 	inline function get_debugger() return FlxG.game.debugger;
-	
+
 	function new() {}
-	
+
 	public function add(window, ?button)
 	{
 		debugger.addWindow(window);
 		debugger.addWindowToggleButton(window, button);
 	}
-	
+
 	public function remove(window)
 	{
 		debugger.removeWindow(window);

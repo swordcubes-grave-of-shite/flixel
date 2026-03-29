@@ -25,7 +25,7 @@ class FlxMatrixSprite extends FlxSprite
 
 		super(x, y, simpleGraphic);
 
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.blit)
 			FlxG.log.warn("FlxMatrixSprites do not work on blit targets");
 	}
 

@@ -14,7 +14,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.helpers.FlxRange;
 import openfl.Assets;
-import openfl.display.BitmapData;
+import flixel.graphics.FlxBitmap;
 import openfl.geom.ColorTransform;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
@@ -187,7 +187,7 @@ class FlxText extends FlxSprite
 	/**
 	 * Helper vars to draw border styles with transparency.
 	 */
-	var _borderPixels:BitmapData;
+	var _borderPixels:FlxBitmap;
 
 	var _borderColorTransform:ColorTransform;
 
@@ -295,7 +295,7 @@ class FlxText extends FlxSprite
 	{
 		regenGraphic();
 
-		var node:FlxNode = atlas.addNode(graphic.bitmap, graphic.key);
+		var node:FlxNode = atlas.addNode(graphic.texture.getBitmap(), graphic.key);
 		var result:Bool = (node != null);
 
 		if (node != null)
@@ -969,7 +969,7 @@ class FlxText extends FlxSprite
 			#end
 
 			if (_hasBorderAlpha)
-				_borderPixels = graphic.bitmap.clone();
+				_borderPixels = graphic.texture.getBitmap().clone();
 
 			if (_autoHeight)
 				textField.height = newHeight;
@@ -981,11 +981,11 @@ class FlxText extends FlxSprite
 		}
 		else // Else just clear the old buffer before redrawing the text
 		{
-			graphic.bitmap.fillRect(_flashRect, FlxColor.TRANSPARENT);
+			graphic.texture.getBitmap().fillRect(_flashRect, FlxColor.TRANSPARENT);
 			if (_hasBorderAlpha)
 			{
 				if (_borderPixels == null)
-					_borderPixels = new BitmapData(frameWidth, frameHeight, true);
+					_borderPixels = new FlxBitmap(frameWidth, frameHeight);
 				else
 					_borderPixels.fillRect(_flashRect, FlxColor.TRANSPARENT);
 			}
@@ -1002,16 +1002,17 @@ class FlxText extends FlxSprite
 			applyBorderTransparency();
 			applyFormats(_formatAdjusted, false);
 
-			drawTextFieldTo(graphic.bitmap);
+			drawTextFieldTo(graphic.texture.getBitmap());
+			graphic.texture.apply(false);
 		}
 
 		resetFrame();
 	}
 
 	/**
-	 * Internal function to draw textField to a BitmapData, if flash it calculates every line x to avoid blurry lines.
+	 * Internal function to draw textField to an FlxBitmap, if flash it calculates every line x to avoid blurry lines.
 	 */
-	function drawTextFieldTo(graphic:BitmapData):Void
+	function drawTextFieldTo(graphic:FlxBitmap):Void
 	{
 		#if flash
 		if (alignment == FlxTextAlign.CENTER && isTextBlurry())
@@ -1088,7 +1089,7 @@ class FlxText extends FlxSprite
 		if (textField == null)
 			return;
 
-		if (FlxG.renderTile && !RunOnCpp)
+		if (FlxG.renderer.tile && !RunOnCpp)
 			return;
 
 		regenGraphic();
@@ -1226,7 +1227,7 @@ class FlxText extends FlxSprite
 
 		_borderColorTransform.alphaMultiplier = borderColor.alphaFloat;
 		_borderPixels.colorTransform(_borderPixels.rect, _borderColorTransform);
-		graphic.bitmap.draw(_borderPixels);
+		graphic.texture.getBitmap().draw(_borderPixels);
 	}
 
 	/**
@@ -1234,7 +1235,7 @@ class FlxText extends FlxSprite
 	 */
 	inline function copyTextWithOffset(x:Float, y:Float)
 	{
-		var graphic:BitmapData = _hasBorderAlpha ? _borderPixels : graphic.bitmap;
+		var graphic:FlxBitmap = _hasBorderAlpha ? _borderPixels : graphic.texture.getBitmap();
 		_matrix.translate(x, y);
 		drawTextFieldTo(graphic);
 	}

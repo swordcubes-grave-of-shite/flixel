@@ -5,6 +5,7 @@ import haxe.macro.Expr;
 #if !macro
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
+import flixel.graphics.FlxBitmap;
 import flixel.graphics.atlas.AseAtlas;
 import flixel.graphics.atlas.TexturePackerAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -12,16 +13,17 @@ import flixel.graphics.frames.FlxFrame;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.frames.bmfont.BMFont;
 import flixel.system.frontEnds.AssetFrontEnd;
+import flixel.util.typeLimit.OneOfFive;
 import flixel.util.typeLimit.OneOfFour;
 import flixel.util.typeLimit.OneOfThree;
 import flixel.util.typeLimit.OneOfTwo;
 import haxe.Json;
 import haxe.io.Bytes;
 import haxe.xml.Access;
-import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.media.Sound;
 import openfl.utils.ByteArray;
+import openfl.display.BitmapData;
 
 using StringTools;
 
@@ -36,16 +38,17 @@ class VirtualInputData extends #if nme ByteArray #else ByteArrayData #end {}
 
 typedef FlxTexturePackerJsonAsset = FlxJsonAsset<TexturePackerAtlas>;
 typedef FlxAsepriteJsonAsset = FlxJsonAsset<AseAtlas>;
-typedef FlxTilemapGraphicAsset = OneOfFour<FlxFramesCollection, FlxGraphic, BitmapData, String>;
-typedef FlxBitmapFontGraphicAsset = OneOfFour<FlxFrame, FlxGraphic, BitmapData, String>;
+typedef FlxTilemapGraphicAsset = OneOfFive<FlxFramesCollection, FlxGraphic, FlxBitmap, BitmapData, String>;
+typedef FlxBitmapFontGraphicAsset = OneOfFive<FlxFrame, FlxGraphic, FlxBitmap, BitmapData, String>;
 
-abstract FlxGraphicAsset(OneOfFour<FlxGraphic, BitmapData, String, Class<Dynamic>>) from FlxGraphic to FlxGraphic from BitmapData to BitmapData from String to String from Class<Dynamic> to Class<Dynamic>
+abstract FlxGraphicAsset(OneOfFive<FlxGraphic, FlxBitmap, BitmapData, String, Class<Dynamic>>) from FlxGraphic to FlxGraphic from FlxBitmap to FlxBitmap from BitmapData to BitmapData from String
+	to String from Class<Dynamic> to Class<Dynamic>
 {
 	public inline function resolveBitmapData(?log, ?pos):Null<BitmapData>
 	{
 		return FlxAssets.resolveBitmapData(cast this, log, pos);
 	}
-	
+
 	public inline function assertBitmapData():BitmapData
 	{
 		return FlxAssets.assertBitmapData(cast this);
@@ -58,7 +61,7 @@ abstract FlxSoundAsset(OneOfFour<String, Sound, Class<Sound>, ByteArray>) from S
 	{
 		return FlxAssets.assertSound(cast this, allowCache, addExt);
 	}
-	
+
 	public inline function resolveSound(allowCache = true, addExt = false, ?log, ?pos):Sound
 	{
 		return FlxAssets.resolveSound(cast this, allowCache, addExt, log, pos);
@@ -133,7 +136,7 @@ abstract FlxJsonAsset<T>(OneOfTwo<T, String>) from T from String
 	}
 }
 
-typedef FlxShader = #if nme Dynamic #else flixel.graphics.tile.FlxGraphicsShader #end;
+typedef FlxShader = #if nme Dynamic #else flixel.system.render.quad.FlxGraphicsShader #end;
 #end
 
 class FlxAssets
@@ -149,26 +152,26 @@ class FlxAssets
 	/**
 	 * Reads files from a directory relative to this project and generates `public static inline`
 	 * variables containing the string paths to the files in it.
-	 * 
+	 *
 	 * **Example usage:**
-	 * 
+	 *
 	 * ```haxe
 	 * @:build(flixel.system.FlxAssets.buildFileReferences("assets/images/"))
 	 * class Images {}
 	 * ```
-	 * 
+	 *
 	 * **Renaming Duplicates**
-	 * 
-	 * If you have files with the same names, whichever file is nested deeper or found later 
-	 * will be ignored. You can provide `rename` function to deal with this case. The function takes a filepath 
-	 * (a relative filepath from the `Project.xml`) and returns a field name used to access that path. 
+	 *
+	 * If you have files with the same names, whichever file is nested deeper or found later
+	 * will be ignored. You can provide `rename` function to deal with this case. The function takes a filepath
+	 * (a relative filepath from the `Project.xml`) and returns a field name used to access that path.
 	 * Returning `null` means "ignore the file".
-	 * 
+	 *
 	 * ```haxe
 	 * // assets structure:
 	 * // assets/music/hero.ogg
 	 * // assets/sounds/hero.ogg
-	 * 
+	 *
 	 * // AssetPaths.hx
 	 * @:build(flixel.system.FlxAssets.buildFileReferences("assets", true, null, null,
 	 * 	function renameFileName(name:String):Null<String>
@@ -181,12 +184,12 @@ class FlxAssets
 	 * 	}
 	 * ))
 	 * class AssetPaths {}
-	 * 
+	 *
 	 * // somewhere in your code
 	 * FlxG.sound.play(AssetPaths.assets_music_hero__ogg);
 	 * FlxG.sound.play(AssetPaths.assets_sounds_hero__ogg);
 	 * ```
-	 * 
+	 *
 	 * @param   directory       The directory to scan for files
 	 * @param   subDirectories  Whether to include subdirectories
 	 * @param   include         A string or `EReg` of files to include
@@ -196,7 +199,7 @@ class FlxAssets
 	 * @param   rename          A function that takes the file path and returns a valid haxe field name
 	 * @param   listField       If not an empty string, it adds static public field with the given
 	 *                          name with an array of every file in the directory
-	 * 
+	 *
 	 * @see [Flixel 5.0.0 Migration guide - AssetPaths has less caveats](https://github.com/HaxeFlixel/flixel/wiki/Flixel-5.0.0-Migration-guide#assetpaths-has-less-caveats-2575)
 	 * @see [Haxe Macros: Code completion for everything](http://blog.stroep.nl/2014/01/haxe-macros/)
 	**/
@@ -292,7 +295,7 @@ class FlxAssets
 		graph.lineTo(100, 100);
 		graph.endFill();
 	}
-	
+
 	/**
 	 * Gets an instance of a bitmap, logs when the asset is not found.
 	 * @param   id  The ID or asset path for the bitmap
@@ -328,19 +331,19 @@ class FlxAssets
 	{
 		if (graphic == null)
 			throw 'Cannot resolve null graphic asset, expected String, FlxGraphic, Class<Bitmap> or BitmapData';
-		
+
 		final data = resolveBitmapData(graphic, null);
 		if (data != null)
 			return data;
-		
+
 		throw 'Invalid graphic asset, expected String, FlxGraphic, Class<Bitmap> or BitmapData';
 	}
-	
+
 	public static function resolveBitmapData(graphic:FlxGraphicAsset, ?log, ?pos):Null<BitmapData>
 	{
 		if ((graphic is FlxGraphic))
 		{
-			return cast(graphic, FlxGraphic).bitmap;
+			return cast(graphic, FlxGraphic).texture.getBitmap();
 		}
 		else if ((graphic is BitmapData))
 		{
@@ -354,13 +357,13 @@ class FlxAssets
 		{
 			return FlxG.assets.getBitmapData(cast graphic);
 		}
-		
+
 		if (log != null)
 			FlxG.log.advanced('Invalid graphic asset, expected String, FlxGraphic, Class<Bitmap> or BitmapData', log, pos);
-		
+
 		return null;
 	}
-	
+
 	public static function resolveSound(sound:FlxSoundAsset, allowCache = true, addExt = false, ?log, ?pos):Null<Sound>
 	{
 		if ((sound is Sound))
@@ -384,7 +387,7 @@ class FlxAssets
 			result.loadCompressedDataFromByteArray(bytes, bytes.length);
 			return result;
 		}
-		
+
 		if (log != null)
 		{
 			if (sound == null)
@@ -392,24 +395,24 @@ class FlxAssets
 			else
 				FlxG.log.advanced('Invalid sound asset, expected String, Sound, Class<Sound> or ByteArray, found: $sound', log, pos);
 		}
-		
+
 		return null;
 	}
-	
+
 	public static function assertSound(sound:FlxSoundAsset, allowCache = true, addExt = false):Sound
 	{
 		if (sound == null)
 		{
 			throw 'Cannot resolve null sound asset, expected String, Sound, Class<Sound> or ByteArray';
 		}
-		
+
 		final data = resolveSound(sound, allowCache, addExt);
 		if (data != null)
 			return data;
-		
+
 		throw 'Invalid sound asset, expected String, Sound, Class<Sound> or ByteArray, found: $sound';
 	}
-	
+
 	/**
 	 * Takes Dynamic object as a input and tries to find appropriate key String for its BitmapData:
 	 * 1) if the input is BitmapData, then it will return second (optional) argument (the Key);
@@ -425,7 +428,7 @@ class FlxAssets
 	{
 		if (key != null)
 			return key;
-		
+
 		if ((graphic is FlxGraphic))
 		{
 			return cast(graphic, FlxGraphic).key;
@@ -442,14 +445,14 @@ class FlxAssets
 		{
 			return cast graphic;
 		}
-		
+
 		return null;
 	}
 
 	/**
-	 * Loads an OpenFL sound asset from the given asset id. If an extension not provided the 
+	 * Loads an OpenFL sound asset from the given asset id. If an extension not provided the
 	 * `defaultSoundExtension` is used (defaults to "ogg" on non-flash targets).
-	 * 
+	 *
 	 * @param   id  The asset id of the local sound file.
 	 * @return  The sound file.
 	 */
@@ -458,14 +461,14 @@ class FlxAssets
 	{
 		return getSoundAddExtension(id);
 	}
-	
+
 	/**
-	 * Loads an OpenFL sound asset from the given asset id. If an extension not provided the 
+	 * Loads an OpenFL sound asset from the given asset id. If an extension not provided the
 	 * `defaultSoundExtension` is used (defaults to "ogg" on non-flash targets).
-	 * 
+	 *
 	 * @param   id  The asset id of the local sound file.
 	 * @return  The sound file.
-	 * 
+	 *
 	 * @since 5.9.0
 	 */
 	public static function getSoundAddExtension(id:String, useCache = true):Sound

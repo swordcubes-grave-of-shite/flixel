@@ -1320,7 +1320,7 @@ class FlxObject extends FlxBasic
 			return;
 
 		final rect = getBoundingBox(camera);
-		if (FlxG.renderTile)
+		if (FlxG.renderer.tile)
 		{
 			final view = camera.getViewMarginRect();
 			view.pad(2);
@@ -1367,7 +1367,7 @@ class FlxObject extends FlxBasic
 
 	inline function beginDrawDebug(camera:FlxCamera):Graphics
 	{
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.blit)
 		{
 			FlxSpriteUtil.flashGfx.clear();
 			return FlxSpriteUtil.flashGfx;
@@ -1380,7 +1380,7 @@ class FlxObject extends FlxBasic
 
 	inline function endDrawDebug(camera:FlxCamera)
 	{
-		if (FlxG.renderBlit)
+		if (FlxG.renderer.blit)
 			camera.buffer.draw(FlxSpriteUtil.flashGfxSprite);
 	}
 	#end
