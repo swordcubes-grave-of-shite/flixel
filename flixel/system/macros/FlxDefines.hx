@@ -329,11 +329,11 @@ class FlxDefines
 		if (defined(FLX_NO_UNIT_TEST))
 			define(FLX_OPENGL_AVAILABLE);
 		#end
-		
+
 		if (defined(FLX_RENDER_CONTEXT3D))
 		{
 			if (!defined(FLX_OPENGL_AVAILABLE))
-				abort("Can only define FLX_RENDER_OPENGL on a target that supports OpenGL", (macro null).pos);
+				abort("Can only define FLX_RENDER_CONTEXT3D on a target that supports OpenGL", (macro null).pos);
 
 			// Disable OpenFL's GL context cache to avoid desync issues between
 			// The Flixel renderer and the OpenFL Context3D renderer

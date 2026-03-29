@@ -45,7 +45,11 @@ abstract class FlxTypedRenderer<TView:FlxCameraView> implements IFlxDestroyable
 		}
 		else
 		{
+			#if FLX_RENDER_CONTEXT3D
+			return cast new flixel.system.render.context3D.FlxContext3DRenderer();
+			#else
 			return cast new flixel.system.render.quad.FlxQuadRenderer();
+			#end
 		}
 	}
 
