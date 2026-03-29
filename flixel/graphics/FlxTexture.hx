@@ -117,8 +117,6 @@ class FlxTexture implements IFlxDestroyable
      */
     var _allocated:Bool = false;
 
-    var _graphic:FlxGraphic;
-
     /**
      * Creates a new `FlxTexture` instance.
      * The texture is NOT ready to be used yet, make sure to upload data to it before using it.

@@ -416,8 +416,6 @@ class FlxGraphic implements IFlxDestroyable
 		frameCollectionTypes = new Array<FlxFrameCollectionType>();
 		this.texture = texture;
 
-		@:privateAccess texture._graphic = this;
-
 		shader = new FlxShader();
 	}
 
