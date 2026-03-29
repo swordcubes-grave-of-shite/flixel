@@ -742,10 +742,10 @@ class FlxSound extends FlxBasic
 	function updateTransform():Void
 	{
 		_transform.volume = calcTransformVolume();
-
+		
 		if (_channel != null)
 			_channel.soundTransform = _transform;
-
+		
 		if (_transform.volume > 0)
 		{
 			if (_channel != null)
